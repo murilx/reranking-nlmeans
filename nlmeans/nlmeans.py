@@ -19,11 +19,11 @@ def nlmeans(ima_nse, hW, hP, tau, sig):
     # Define a patch shape in the Fourier domain
     M, N = ima_nse.shape
     cM, cN = fourier_center(M, N)
-    patch_shape = np.zeros((M, N))
+    # patch_shape = np.zeros((M, N))
     Y, X = np.meshgrid(np.arange(1, M+1), np.arange(1, N+1))
-    patch_shape = ((Y - cM)**2 + (X - cN)**2) <= hP**2
-    patch_shape = patch_shape / np.sum(patch_shape)
-    patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
+    # patch_shape = ((Y - cM)**2 + (X - cN)**2) <= hP**2
+    # patch_shape = patch_shape / np.sum(patch_shape)
+    # patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
 
     # Main loop
     sum_w = np.zeros((M, N))
@@ -32,15 +32,15 @@ def nlmeans(ima_nse, hW, hP, tau, sig):
         for dy in range(-hW, hW+1):
             # Restrict the search window to be circular
             # and avoid the central pixel
-            if (dx == 0 and dy == 0) or dx**2 + dy**2 > hW**2:
-                continue
-            x2range = np.mod(np.arange(1, M+1) + dx - 1, M) + 1
-            y2range = np.mod(np.arange(1, N+1) + dy - 1, N) + 1
+            # if (dx == 0 and dy == 0) or dx**2 + dy**2 > hW**2:
+            #     continue
+            x2range = np.mod(np.arange(0, M) + dx - 1, M)
+            y2range = np.mod(np.arange(0, N) + dy - 1, N)
 
             # Calculate the Euclidean distance between all pairs of
             # patches in the direction (dx, dy)
             diff = (ima_nse - ima_nse[x2range-1, y2range-1])**2
-            diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
+            # diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
 
             # Convert the distance to weights using an exponential
             # kernel (this is a critical step!)
@@ -58,6 +58,6 @@ def nlmeans(ima_nse, hW, hP, tau, sig):
 
     # Weighted average
     ima_fil = sum_wI / sum_w
-    ima_w = w / sum_w
+    # ima_w = w / sum_w
 
     return ima_fil

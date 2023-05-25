@@ -10,7 +10,8 @@ def nlmeans_sar_it(ima_nse, ima_est, hW, hP, tau, T):
     M, N = ima_nse.shape
     cM, cN = fourier_center(M, N)
     patch_shape = np.zeros((M, N))
-    Y, X = np.meshgrid(np.arange(1, M+1), np.arange(1, N+1))
+    # Y, X = np.meshgrip(np.arange(1, M+1), np.arange(1, N+1))
+    Y, X = np.meshgrid(np.arange(0, M), np.arange(0, N))
     patch_shape = (Y - cM)**2 + (X - cN)**2 <= hP**2
     patch_shape = patch_shape / np.sum(patch_shape)
     patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
@@ -34,9 +35,6 @@ def nlmeans_sar_it(ima_nse, ima_est, hW, hP, tau, T):
             diff = np.log(np.divide(ima_nse, ima_nse[x2range[:, None], y2range[None, :]]) + \
                           np.divide(ima_nse[x2range[:, None], y2range[None, :]], ima_nse)) - \
                    np.log(2)
-            # diff = np.log(ima_nse / ima_nse[x2range.flatten(), y2range.flatten()] + \
-            #               ima_nse[x2range.flatten(), y2range.flatten()] / ima_nse) - \
-            #        np.log(2)
             diff = np.real(np.fft.ifft2((patch_shape * np.fft.fft2(diff))))
 
             # Calculate the Kullback-Leibler divergence based dissimilarity
@@ -44,9 +42,6 @@ def nlmeans_sar_it(ima_nse, ima_est, hW, hP, tau, T):
             diff2 = np.divide(ima_est**2, ima_est[x2range[:, None], y2range[None, :]]**2) + \
                     np.divide(ima_est[x2range[:, None], y2range[None, :]]**2, ima_est**2) - \
                    2
-            # diff2 = ima_est**2 / ima_est[x2range.flatten(), y2range.flatten()]**2 + \
-            #         ima_est[x2range.flatten(), y2range.flatten()]**2 / ima_est**2 - \
-            #        2
             diff2 = np.real(np.fft.ifft2((patch_shape * np.fft.fft2(diff2))))
 
             # Combine both dissimilarity criteria and convert them
