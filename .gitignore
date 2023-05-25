@@ -1,5 +1,6 @@
 # Python related files
 __pycache__/
 
-# Test images
-lena.png
+# Images - Input and Output
+input/
+output/
