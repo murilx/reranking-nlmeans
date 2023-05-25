@@ -1,0 +1,5 @@
+# Python related files
+__pycache__/
+
+# Test images
+lena.png
