@@ -24,7 +24,7 @@ def main():
     im = plt.imread(sys.argv[1]).astype('float')
     im_nse = np.sqrt(stats.gamma.rvs(L, scale=im**2/L))
 
-    # Run filtering
+    # Run filtering (nlmeans_sar)
     start_time = time()
     im_fil = nlmeans_sar(im_nse, hW, hP, tau)
     for i in range(1, N):
@@ -40,9 +40,9 @@ def main():
     plt.show()
 
     # Evaluate
-    print("PSNR: ", psnr(im, im_fil))
-    print("SSIM: ", ssim(im, im_fil))
-    print("MSE: ", mse(im, im_fil))
+    print("PSNR: ", psnr(im, im_fil, data_range=im_fil.max() - im_fil.min()))
+    print("SSIM: ", ssim(im, im_fil, data_range=im_fil.max() - im_fil.min()))
+    print("MSE:  ", mse(im, im_fil))
     
 if __name__ == '__main__':
     main()
