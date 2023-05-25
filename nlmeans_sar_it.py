@@ -24,21 +24,29 @@ def nlmeans_sar_it(ima_nse, ima_est, hW, hP, tau, T):
             # and avoid the central pixel
             if (dx == 0 and dy == 0) or dx**2 + dy**2 > hW**2:
                 continue
-            x2range = np.mod(np.arange(1, M+1) + dx - 1, M) + 1
-            y2range = np.mod(np.arange(1, N+1) + dy - 1, N) + 1
+            x2range = np.mod(np.arange(0, M) + dx - 1, M) 
+            y2range = np.mod(np.arange(0, N) + dy - 1, N)
+            # x2range = np.mod(np.arange(1, M+1) + dx - 1, M) + 1 
+            # y2range = np.mod(np.arange(1, N+1) + dy - 1, N) + 1
 
             # Calculate the generalized likelihood ratio based dissimilarity
             # derived for Nakagami-Rayleigh distributions.
-            diff = np.log(ima_nse / ima_nse[x2range[:, None], y2range[None, :]] + \
-                          ima_nse[x2range[:, None], y2range[None, :]] / ima_nse) - \
+            diff = np.log(np.divide(ima_nse, ima_nse[x2range[:, None], y2range[None, :]]) + \
+                          np.divide(ima_nse[x2range[:, None], y2range[None, :]], ima_nse)) - \
                    np.log(2)
+            # diff = np.log(ima_nse / ima_nse[x2range.flatten(), y2range.flatten()] + \
+            #               ima_nse[x2range.flatten(), y2range.flatten()] / ima_nse) - \
+            #        np.log(2)
             diff = np.real(np.fft.ifft2((patch_shape * np.fft.fft2(diff))))
 
             # Calculate the Kullback-Leibler divergence based dissimilarity
             # derived for Nakagami-Rayleigh distributions.
-            diff2 = ima_est**2 / ima_est[x2range[:, None], y2range[None, :]]**2 + \
-                    ima_est[x2range[:, None], y2range[None, :]]**2 / ima_est**2 - \
+            diff2 = np.divide(ima_est**2, ima_est[x2range[:, None], y2range[None, :]]**2) + \
+                    np.divide(ima_est[x2range[:, None], y2range[None, :]]**2, ima_est**2) - \
                    2
+            # diff2 = ima_est**2 / ima_est[x2range.flatten(), y2range.flatten()]**2 + \
+            #         ima_est[x2range.flatten(), y2range.flatten()]**2 / ima_est**2 - \
+            #        2
             diff2 = np.real(np.fft.ifft2((patch_shape * np.fft.fft2(diff2))))
 
             # Combine both dissimilarity criteria and convert them
