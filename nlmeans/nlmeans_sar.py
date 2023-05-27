@@ -1,5 +1,5 @@
 import numpy as np
-from nlmeans_sar_it import nlmeans_sar_it
+from .nlmeans_sar_it import nlmeans_sar_it
 
 def nlmeans_sar(ima_nse, hW, hP, tau):
     # This realizes an NL means scheme for Nakagami-Rayleigh

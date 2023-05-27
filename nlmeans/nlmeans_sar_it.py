@@ -1,6 +1,6 @@
 import numpy as np
-from fourier_center import fourier_center
-from phi import phi
+from .fourier_center import fourier_center
+from .phi import phi
 
 def nlmeans_sar_it(ima_nse, ima_est, hW, hP, tau, T):
     # Force image to be defined on R^+
