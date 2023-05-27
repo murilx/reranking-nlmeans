@@ -9,12 +9,14 @@ from skimage.metrics import mean_squared_error as mse
 import sys
 from time import time
 
+import parameters
+
+hW = parameters.hW
+hP = parameters.hP
+sig = parameters.sig
+
 
 def main():
-    hW = 10    # Window size
-    hP = 3     # Patch size
-    sig = 0.2  # Standard deviation of the gaussian noise
-
     # Load image and synthetize Nakagami-Rayleigh noise of parameter L
     im = plt.imread(sys.argv[1]).astype('float')
     im_nse = random_noise(im, var=sig ** 2)

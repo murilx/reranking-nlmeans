@@ -10,16 +10,17 @@ from time import time
 
 from nlmeans.nlmeans_sar import nlmeans_sar
 from nlmeans.nlmeans_sar_it import nlmeans_sar_it
+import parameters
+
+hW = parameters.hW
+hP = parameters.hP
+tau = parameters.tau
+T = parameters.T
+L = parameters.L
+N = parameters.N
 
 
 def main():
-    hW = 10    # Window size
-    hP = 3     # Patch size
-    tau = 0.15 # Contribution of similarity on noisy-data
-    T = 0.15   # Contribution of similarity on pre-estimated data
-    L = 3      # Number of look
-    N = 4      # Number of iteration
-
     # Load image and synthetize Nakagami-Rayleigh noise of parameter L
     im = plt.imread(sys.argv[1]).astype('float')
     im_nse = np.sqrt(stats.gamma.rvs(L, scale=im**2/L))

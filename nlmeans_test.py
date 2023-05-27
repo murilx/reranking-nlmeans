@@ -10,14 +10,15 @@ import sys
 from time import time
 
 from nlmeans.nlmeans import nlmeans
+import parameters
+
+hW = parameters.hW
+hP = parameters.hP
+sig = parameters.sig
+tau = parameters.tau
 
 
 def main():
-    hW = 10    # Window size
-    hP = 3     # Patch size
-    sig = 0.2  # Standard deviation of the gaussian noise
-    tau = 0.15
-
     # Load image and synthetize Nakagami-Rayleigh noise of parameter L
     im = plt.imread(sys.argv[1]).astype('float')
     im_nse = random_noise(im, var=sig ** 2)
@@ -28,7 +29,7 @@ def main():
 
     # Run filtering
     start_time = time()
-    im_fil = nlmeans(im_nse, hW, hP, tau, sigma_est)
+    im_fil = nlmeans(im_nse, hW, hP, tau, sigma_est, sys.argv[2])
     print("Time spent: ", time() - start_time)
 
     # Show results
