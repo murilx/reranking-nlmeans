@@ -8,8 +8,8 @@ from skimage.metrics import mean_squared_error as mse
 import sys
 from time import time
 
-from nlmeans_sar import nlmeans_sar
-from nlmeans_sar_it import nlmeans_sar_it
+from nlmeans.nlmeans_sar import nlmeans_sar
+from nlmeans.nlmeans_sar_it import nlmeans_sar_it
 
 
 def main():
