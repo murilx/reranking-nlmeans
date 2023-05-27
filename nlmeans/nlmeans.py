@@ -1,5 +1,5 @@
 import numpy as np
-from fourier_center import fourier_center
+from .fourier_center import fourier_center
 
 def nlmeans(ima_nse, hW, hP, tau, sig):
     # This is a simple implementation of NL means:
@@ -19,11 +19,12 @@ def nlmeans(ima_nse, hW, hP, tau, sig):
     # Define a patch shape in the Fourier domain
     M, N = ima_nse.shape
     cM, cN = fourier_center(M, N)
-    # patch_shape = np.zeros((M, N))
-    Y, X = np.meshgrid(np.arange(1, M+1), np.arange(1, N+1))
-    # patch_shape = ((Y - cM)**2 + (X - cN)**2) <= hP**2
-    # patch_shape = patch_shape / np.sum(patch_shape)
-    # patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
+    patch_shape = np.zeros((M, N))
+    Y, X = np.meshgrid(np.arange(0, M), np.arange(0, N))
+    patch_shape = ((Y - cM)**2 + (X - cN)**2) <= hP**2            # Disk
+    # patch_shape = (np.abs(Y - cM) <= hP/2) & (np.abs(X - cN) <= hP/2) # Square
+    patch_shape = patch_shape / np.sum(patch_shape)
+    patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
 
     # Main loop
     sum_w = np.zeros((M, N))
@@ -40,7 +41,7 @@ def nlmeans(ima_nse, hW, hP, tau, sig):
             # Calculate the Euclidean distance between all pairs of
             # patches in the direction (dx, dy)
             diff = (ima_nse - ima_nse[x2range-1, y2range-1])**2
-            # diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
+            diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
 
             # Convert the distance to weights using an exponential
             # kernel (this is a critical step!)
