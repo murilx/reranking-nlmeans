@@ -1,7 +1,7 @@
 import numpy as np
 from .fourier_center import fourier_center
 
-def nlmeans(ima_nse, hW, hP, tau, sig):
+def nlmeans(ima_nse, hW, hP, tau, sig, shape):
     # This is a simple implementation of NL means:
     #
     #   Buades, A. and Coll, B. and Morel, J.M.,
@@ -19,10 +19,13 @@ def nlmeans(ima_nse, hW, hP, tau, sig):
     # Define a patch shape in the Fourier domain
     M, N = ima_nse.shape
     cM, cN = fourier_center(M, N)
-    patch_shape = np.zeros((M, N))
     Y, X = np.meshgrid(np.arange(0, M), np.arange(0, N))
-    patch_shape = ((Y - cM)**2 + (X - cN)**2) <= hP**2            # Disk
-    # patch_shape = (np.abs(Y - cM) <= hP/2) & (np.abs(X - cN) <= hP/2) # Square
+
+    patch_shape = np.zeros((M, N))
+    if(shape == 'square'):
+        patch_shape = (np.abs(Y - cM) <= hP/2) & (np.abs(X - cN) <= hP/2)
+    elif(shape == 'disk'):
+        patch_shape = ((Y - cM)**2 + (X - cN)**2) <= hP**2
     patch_shape = patch_shape / np.sum(patch_shape)
     patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
 
