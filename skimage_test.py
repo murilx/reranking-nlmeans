@@ -13,10 +13,11 @@ from time import time
 def main():
     hW = 10    # Window size
     hP = 3     # Patch size
+    sig = 0.2  # Standard deviation of the gaussian noise
 
     # Load image and synthetize Nakagami-Rayleigh noise of parameter L
     im = plt.imread(sys.argv[1]).astype('float')
-    im_nse = random_noise(im, var=0.08**2)
+    im_nse = random_noise(im, var=sig ** 2)
 
     # estimate the noise standard deviation from the noisy image
     sigma_est = np.mean(estimate_sigma(im_nse, channel_axis=-1))
@@ -24,7 +25,7 @@ def main():
 
     # nlmeans parameters
     patch_kw = dict(patch_size = hP,
-                    patch_distance = hW//2,
+                    patch_distance = hW,
                     channel_axis=None) # grayscale image
     
     # Run filtering
