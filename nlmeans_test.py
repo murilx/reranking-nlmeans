@@ -16,6 +16,7 @@ hW = parameters.hW
 hP = parameters.hP
 sig = parameters.sig
 tau = parameters.tau
+tau = 0.10
 
 
 def main():

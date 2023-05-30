@@ -15,7 +15,7 @@ import parameters
 hW = parameters.hW
 hP = parameters.hP
 sig = parameters.sig
-h = 20
+h = 45
 
 
 def main():
