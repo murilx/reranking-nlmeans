@@ -34,10 +34,14 @@ def nlmeans(ima_nse, hW, hP, tau, sig, shape):
     sum_wI = np.zeros((M, N))
     for dx in range(-hW, hW+1):
         for dy in range(-hW, hW+1):
+            # Restrict the search window to avoid the central pixel
+            if (dx == 0 and dy == 0):
+                continue
             # Restrict the search window to be circular
-            # and avoid the central pixel
-            # if (dx == 0 and dy == 0) or dx**2 + dy**2 > hW**2:
-            #     continue
+            # if the disk shape is choose
+            if (shape == 'disk') and dx**2 + dy**2 > hW**2:
+                    continue
+
             x2range = np.mod(np.arange(0, M) + dx - 1, M)
             y2range = np.mod(np.arange(0, N) + dy - 1, N)
 
