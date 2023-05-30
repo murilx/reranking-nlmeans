@@ -20,7 +20,7 @@ tau = 0.10
 
 
 def main():
-    # Load image and synthetize Nakagami-Rayleigh noise of parameter L
+    # Load the image and add noise to it
     im = plt.imread(sys.argv[1]).astype('float')
     im_nse = random_noise(im, var=sig ** 2)
 
@@ -35,8 +35,8 @@ def main():
 
     # Run filtering
     start_time = time()
-    # im_fil = nlmeans(im_nse, hW, hP, tau, sigma_est, shape)
-    im_fil = nlmeans(im_nse, hW, hP, tau, sig, shape)
+    im_fil = nlmeans(im_nse, hW, hP, tau, sigma_est, shape)
+    # im_fil = nlmeans(im_nse, hW, hP, tau, sig, shape)
     print("Time spent: ", time() - start_time)
 
     # Show results
