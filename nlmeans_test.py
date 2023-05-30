@@ -28,9 +28,15 @@ def main():
     sigma_est = np.mean(estimate_sigma(im_nse, channel_axis=-1))
     print('estimated noise standard deviation =', sigma_est)
 
+    # Determine the patch shape
+    shape = 'square'
+    if(len(sys.argv) == 3):
+        shape = sys.argv[2]
+
     # Run filtering
     start_time = time()
-    im_fil = nlmeans(im_nse, hW, hP, tau, sigma_est, sys.argv[2])
+    # im_fil = nlmeans(im_nse, hW, hP, tau, sigma_est, shape)
+    im_fil = nlmeans(im_nse, hW, hP, tau, sig, shape)
     print("Time spent: ", time() - start_time)
 
     # Show results
