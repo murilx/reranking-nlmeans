@@ -10,7 +10,6 @@ def nlmeans_sar_it(ima_nse, ima_est, hW, hP, tau, T):
     M, N = ima_nse.shape
     cM, cN = fourier_center(M, N)
     patch_shape = np.zeros((M, N))
-    # Y, X = np.meshgrip(np.arange(1, M+1), np.arange(1, N+1))
     Y, X = np.meshgrid(np.arange(0, M), np.arange(0, N))
     patch_shape = (Y - cM)**2 + (X - cN)**2 <= hP**2
     patch_shape = patch_shape / np.sum(patch_shape)
