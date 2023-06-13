@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from skimage.util import random_noise, img_as_ubyte
 from skimage.restoration import estimate_sigma
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
