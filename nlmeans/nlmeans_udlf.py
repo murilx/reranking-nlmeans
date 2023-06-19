@@ -84,11 +84,14 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
     ima_fil = sum_wI / sum_w
     # ima_w = w / sum_w
 
+    
     # Remove the temporary files created
-    os.remove('input.txt')
-    os.remove('list.txt')
-    os.remove('log.txt')
-    os.remove('output.txt')
+    tmp_files_created = ['input.txt', 'list.txt', 'log.txt', 'output.txt']
+    for tmp_file in tmp_files_created:
+        try:
+            os.remove(tmp_file)
+        except FileNotFoundError:
+            pass
 
     return ima_fil
 
