@@ -6,6 +6,7 @@ from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import mean_squared_error as mse
 
+import os
 import sys
 from time import time
 
@@ -37,6 +38,14 @@ def main():
     start_time = time()
     im_fil = nlmeans_udlf(im_nse, hW, hP, tau, sigma_est, shape)
     print("Time spent: ", time() - start_time)
+    
+    # Remove the temporary files created
+    tmp_files_created = ['input.txt', 'list.txt', 'log.txt', 'output.txt']
+    for tmp_file in tmp_files_created:
+        try:
+            os.remove(tmp_file)
+        except FileNotFoundError:
+            pass
 
     # Show results
     plt.figure()
