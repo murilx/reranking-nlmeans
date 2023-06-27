@@ -30,9 +30,16 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
     patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
 
     # UDLF configuration
-    input_data = udlf_config(dataset_size=M)
-    patch_names = np.reshape(np.arange(0, M, dtype=int), (M, 1))
-    np.savetxt('list.txt', patch_names, fmt='%d', delimiter=' ', newline='\n')
+    input_data = udlf_config(dataset_size=M*N)
+
+    # Creation of the weight names list
+    weight_names_list = np.reshape(np.arange(0, M * N, dtype=int), (M * N, 1))
+    np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
+
+    # Weight value and weight names matrices
+    w_values = np.zeros((M, N, (2*hW+1)**2))
+    w_names = np.zeros((M, N, (2*hW+1)**2))
+    w_num = 0
 
     # Main loop
     sum_w = np.zeros((M, N))
@@ -41,7 +48,17 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
         for dy in range(-hW, hW+1):
             # Restrict the search window to avoid the central pixel
             if (dx == 0 and dy == 0):
+                # For the central weight we follow the idea of:
+                #   "On two parameters for denoising with Non-Local Means"
+                #   J. Salmon, IEEE Signal Process. Lett., 2010
+                w = np.ones((M, N)) * np.exp(-2*sig**2/tau**2)
+                x2range = np.arange(0, M)
+                y2range = np.arange(0, N)
+                w_values[:,:,w_num] = w
+                w_names[:,:,w_num] = x2range.reshape((M, 1)) * M + y2range.reshape((1, N))
+                w_num += 1
                 continue
+            
             # Restrict the search window to be circular
             # if the disk shape is choose
             if (shape == 'disk') and dx**2 + dy**2 > hW**2:
@@ -55,39 +72,43 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
             diff = (ima_nse - ima_nse[x2range, y2range])**2
             diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
             
-            # Create the input.txt file for UDLF
-            np.savetxt('input.txt', diff, delimiter=' ', newline='\n')
-            
-            # Run the UDLF framework to get a better distance value
-            udlf.run(input_data, get_output=True)
-            diff2 = np.loadtxt('output.txt', dtype=np.float64,
-                              delimiter=' ', usecols=range(diff.shape[1]))
-
-            if((diff2 - diff) == 0).all():
-                print("diff = diff2")
-
             # Convert the distance to weights using an exponential
             # kernel (this is a critical step!)
             w = np.exp(- diff / tau**2)
 
-            # Increment accumulators for the weighted average
-            sum_w += w
-            sum_wI += w * ima_nse[x2range-1, y2range-1]
+            # Save the weight matrix and its identifier
+            w_values[:,:,w_num] = w
+            w_names[:,:,w_num] = x2range.reshape((M, 1)) * M + y2range.reshape((1, N))
+            w_num += 1
 
-    # For the central weight we follow the idea of:
-    #   "On two parameters for denoising with Non-Local Means"
-    #   J. Salmon, IEEE Signal Process. Lett., 2010
-    sum_w += np.exp(-2*sig**2/tau**2)
-    sum_wI += np.exp(-2*sig**2/tau**2) * ima_nse
+    # Create the ranked list of weight matrices for udlf
+    ranked_lists = np.zeros((M * N, (2*hW+1)**2), dtype=int)
+    rl = np.zeros(((2*hW+1)**2, 2), dtype=int)
+    for i in range(M):
+        for j in range(N):
+            rl[:, 0] = w_names[i, j, :]                
+            rl[:, 1] = w_values[i, j, :]
+            rl = rl[rl[:, 1].argsort()]                # Sort by value
+            ranked_lists[i * M + j, :] = rl[:, 0]      # Save only the names
 
-    # Weighted average
-    ima_fil = sum_wI / sum_w
-    # ima_w = w / sum_w
+    # Create the input file for the UDLF
+    np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
 
-    
+    # Run the UDLF framework to get a ranked list of weights
+    udlf.run(input_data, get_output=True)
+    new_ranked_lists = np.loadtxt('output.txt',
+                                  dtype=int,
+                                  delimiter=' ',
+                                  usecols=range(ranked_lists.shape[1]))
+
+
+    # Main loop after UDLF
+    for dx in range(-hW, hW+1):
+        for dy in range(-hW, hW+1):
             pass
+        
 
-    return ima_fil
+    # return ima_fil
 
 
 def udlf_config(dataset_size):
@@ -102,21 +123,23 @@ def udlf_config(dataset_size):
 
     # Input dataset files
     input_data.set_param('UDL_TASK', 'UDL')
-    input_data.set_param('UDL_METHOD', 'LHRR')
-    # input_data.set_param('UDL_METHOD', 'NONE')
+    # input_data.set_param('UDL_METHOD', 'LHRR')
+    input_data.set_param('UDL_METHOD', 'NONE')
     input_data.set_param('SIZE_DATASET', f'{dataset_size}')
-    input_data.set_param('INPUT_FILE_FORMAT', 'MATRIX')
-    input_data.set_param('INPUT_MATRIX_TYPE', 'DIST')
+    # input_data.set_param('INPUT_FILE_FORMAT', 'MATRIX')
+    # input_data.set_param('INPUT_MATRIX_TYPE', 'DIST')
     input_data.set_param('MATRIX_TO_RK_SORTING', 'HEAP')
+    input_data.set_param('INPUT_FILE_FORMAT', 'RK')
+    input_data.set_param('INPUT_RK_FORMAT', 'NUM')
     input_data.set_param('INPUT_FILE', 'input.txt')
     input_data.set_param('INPUT_FILE_LIST', 'list.txt')
    
     # Output file settings
     input_data.set_param('OUTPUT_FILE', 'TRUE')
-    # input_data.set_param('OUTPUT_FILE_FORMAT', 'RK')
-    # input_data.set_param('OUTPUT_RK_FORMAT', 'NUM')
-    input_data.set_param('OUTPUT_FILE_FORMAT', 'MATRIX')
-    input_data.set_param('OUTPUT_MATRIX_TYPE', 'DIST')
+    input_data.set_param('OUTPUT_FILE_FORMAT', 'RK')
+    input_data.set_param('OUTPUT_RK_FORMAT', 'NUM')
+    # input_data.set_param('OUTPUT_FILE_FORMAT', 'MATRIX')
+    # input_data.set_param('OUTPUT_MATRIX_TYPE', 'DIST')
     input_data.set_param('OUTPUT_FILE_PATH', 'output')
 
     # Evaluation settings
