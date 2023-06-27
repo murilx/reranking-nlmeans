@@ -47,7 +47,7 @@ def nlmeans(ima_nse, hW, hP, tau, sig, shape):
 
             # Calculate the Euclidean distance between all pairs of
             # patches in the direction (dx, dy)
-            diff = (ima_nse - ima_nse[x2range-1, y2range-1])**2
+            diff = (ima_nse - ima_nse[x2range, y2range])**2
             diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
 
             # Convert the distance to weights using an exponential
@@ -56,7 +56,7 @@ def nlmeans(ima_nse, hW, hP, tau, sig, shape):
 
             # Increment accumulators for the weighted average
             sum_w += w
-            sum_wI += w * ima_nse[x2range-1, y2range-1]
+            sum_wI += w * ima_nse[x2range, y2range]
 
     # For the central weight we follow the idea of:
     #   "On two parameters for denoising with Non-Local Means"

@@ -52,7 +52,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
 
             # Calculate the Euclidean distance between all pairs of
             # patches in the direction (dx, dy)
-            diff = (ima_nse - ima_nse[x2range-1, y2range-1])**2
+            diff = (ima_nse - ima_nse[x2range, y2range])**2
             diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
             
             # Create the input.txt file for UDLF
