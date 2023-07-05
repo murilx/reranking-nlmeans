@@ -85,10 +85,10 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
     rl = np.zeros((RESEARCH_AREA, 2), dtype=int)
     for i in range(M):
         for j in range(N):
-            rl[:, 0] = w_names[i, j, :]                
-            rl[:, 1] = w_values[i, j, :]
-            rl = rl[rl[:, 1].argsort()]                # Sort by value
-            ranked_lists[i * M + j, :] = rl[:, 0]      # Save only the names
+            rl[:, 0] = np.copy(w_names[i, j, :])
+            rl[:, 1] = np.copy(w_values[i, j, :])
+            rl = rl[rl[:, 1].argsort()]
+            ranked_lists[i * M + j, :] = np.copy(rl[:, 0]) 
 
     # Create the input file for the UDLF
     np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
@@ -99,7 +99,6 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
                                   dtype=int,
                                   delimiter=' ',
                                   usecols=range(ranked_lists.shape[1]))
-
 
     # Main loop after UDLF
     for dx in range(-hW, hW+1):
