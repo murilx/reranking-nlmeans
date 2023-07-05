@@ -110,7 +110,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
     # return ima_fil
 
 
-def udlf_config(dataset_size):
+def udlf_config(size_dataset, L):
     # Set the paths for UDLF
     udlf.setBinaryPath(os.path.join(os.path.dirname(__file__),
                                     '../udlf/udlf'))
@@ -124,10 +124,10 @@ def udlf_config(dataset_size):
     input_data.set_param('UDL_TASK', 'UDL')
     # input_data.set_param('UDL_METHOD', 'LHRR')
     input_data.set_param('UDL_METHOD', 'NONE')
-    input_data.set_param('SIZE_DATASET', f'{dataset_size}')
+    input_data.set_param('SIZE_DATASET', f'{size_dataset}')
     # input_data.set_param('INPUT_FILE_FORMAT', 'MATRIX')
     # input_data.set_param('INPUT_MATRIX_TYPE', 'DIST')
-    input_data.set_param('MATRIX_TO_RK_SORTING', 'HEAP')
+    # input_data.set_param('MATRIX_TO_RK_SORTING', 'HEAP')
     input_data.set_param('INPUT_FILE_FORMAT', 'RK')
     input_data.set_param('INPUT_RK_FORMAT', 'NUM')
     input_data.set_param('INPUT_FILE', 'input.txt')
@@ -143,10 +143,13 @@ def udlf_config(dataset_size):
 
     # Evaluation settings
     input_data.set_param('EFFECTIVENESS_EVAL', 'FALSE')
+
+    # NONE method parameters
+    input_data.set_param('PARAM_NONE_L', f'{L}')
     
-    # Method parameters
+    # LHRR method parameters
     input_data.set_param('PARAM_LHRR_K', '18')
-    input_data.set_param('PARAM_LHRR_L', f'{dataset_size}')
+    input_data.set_param('PARAM_LHRR_L', f'{L}')
     input_data.set_param('PARAM_LHRR_T', '2')
 
     return input_data
