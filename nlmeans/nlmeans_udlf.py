@@ -14,12 +14,11 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
     #
     # It uses UDLF to define distance between patches
 
-    # UDLF configuration
-
     # Define a patch shape in the Fourier domain
     M, N = ima_nse.shape
     cM, cN = fourier_center(M, N)
     Y, X = np.meshgrid(np.arange(0, M), np.arange(0, N))
+    RESEARCH_AREA = (2*hW+1)**2
 
     patch_shape = np.zeros((M, N))
     if(shape == 'square'):
@@ -30,15 +29,15 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
     patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
 
     # UDLF configuration
-    input_data = udlf_config(dataset_size=M*N)
+    input_data = udlf_config(size_dataset=M*N, L=RESEARCH_AREA)
 
     # Creation of the weight names list
     weight_names_list = np.reshape(np.arange(0, M * N, dtype=int), (M * N, 1))
     np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
 
     # Weight value and weight names matrices
-    w_values = np.zeros((M, N, (2*hW+1)**2))
-    w_names = np.zeros((M, N, (2*hW+1)**2))
+    w_values = np.zeros((M, N, RESEARCH_AREA))
+    w_names = np.zeros((M, N, RESEARCH_AREA))
     w_num = 0
 
     # Main loop
@@ -82,8 +81,8 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
             w_num += 1
 
     # Create the ranked list of weight matrices for udlf
-    ranked_lists = np.zeros((M * N, (2*hW+1)**2), dtype=int)
-    rl = np.zeros(((2*hW+1)**2, 2), dtype=int)
+    ranked_lists = np.zeros((M * N, RESEARCH_AREA), dtype=int)
+    rl = np.zeros((RESEARCH_AREA, 2), dtype=int)
     for i in range(M):
         for j in range(N):
             rl[:, 0] = w_names[i, j, :]                
