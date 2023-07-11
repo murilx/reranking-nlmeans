@@ -51,13 +51,19 @@ def main():
     im_name = os.path.splitext(os.path.basename(sys.argv[1]))[0]
     plt.figure()
     plt.subplot(1, 3, 1)
+    plt.xlabel('Noise image')
     plt.imshow(im_nse, cmap='gray')
+    
     plt.subplot(1, 3, 2)
+    plt.xlabel('NLM image')
     plt.imshow(im_fil1, cmap='gray')
+    
     plt.subplot(1, 3, 3)
+    plt.xlabel('LHRR+NLM image')
     plt.imshow(im_fil2, cmap='gray')
+    
     plt.savefig('output/' + im_name + '_denoise.png')
-    # plt.show()
+    plt.show()
     
 
     # Evaluate and save info
@@ -67,6 +73,7 @@ def main():
                 logging.StreamHandler()]
     logging.basicConfig(level=level, format=strfmt, handlers=handlers)
     
+    logging.info(f"Image: {im_name}")
     logging.info("Non-Local Means SAP:")
     logging.info(f"Time: {nlmeans_sap_time}")
     logging.info(f"PSNR: {psnr(im, im_fil1, data_range=im_fil1.max() - im_fil1.min())}")
