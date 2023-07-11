@@ -111,7 +111,8 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
 
         # Get rhe coordinates of every weight
         # excluding the last ones in the list (the ones with less rank)
-        weight_coords = new_ranked_lists[pos, :num_weights]
+        new_w_names = new_ranked_lists[pos, :num_weights]
+        weight_coords = np.where(w_names == new_w_names[:, None])[1]
 
         # Calculate the desnoised value of each pixel
         sum_wI[ix, iy] = np.sum(ima_nse[ix, iy] * w_values[ix, iy, weight_coords])
