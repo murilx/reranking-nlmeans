@@ -45,8 +45,15 @@ def main():
     start_time = time()
     im_fil2 = nlmeans_udlf(im_nse, hW, hP, tau, sigma_est, shape)
     nlmeans_uldf_time = time() - start_time
-
     
+    # Remove the temporary files created
+    tmp_files_created = ['input.txt', 'list.txt', 'log.txt', 'output.txt']
+    for tmp_file in tmp_files_created:
+        try:
+            os.remove(tmp_file)
+        except FileNotFoundError:
+            pass
+
     # Show results
     im_name = os.path.splitext(os.path.basename(sys.argv[1]))[0]
     plt.figure()
