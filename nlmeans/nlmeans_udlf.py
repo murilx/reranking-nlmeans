@@ -37,7 +37,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
 
     # Weight value and weight names matrices
     w_values = np.zeros((M, N, RESEARCH_AREA))
-    w_names = np.zeros((M, N, RESEARCH_AREA))
+    w_names = np.zeros((M, N, RESEARCH_AREA), dtype=int)
     w_num = 0
 
     # Main loop
@@ -52,7 +52,8 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
                 x2range = np.arange(0, M)
                 y2range = np.arange(0, N)
                 w_values[:,:,w_num] = w
-                w_names[:,:,w_num] = x2range.reshape((M, 1)) * M + y2range.reshape((1, N))
+                w_names[:,:,w_num] = (x2range.reshape((M, 1)) * M +
+                                      y2range.reshape((1, N))).astype(int)
                 w_num += 1
                 continue
             
@@ -94,10 +95,10 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
     # Run the UDLF framework to get a ranked list of weights
     # TODO For the none parameter udlf cannot run and return the message "Killed"
     udlf.run(input_data, get_output=True)
-    new_ranked_lists = np.loadtxt('output.txt',
-                                  dtype=int,
-                                  delimiter=' ',
-                                  usecols=range(ranked_lists.shape[1]))
+    # new_ranked_lists = np.loadtxt('output.txt',
+    #                               dtype=int,
+    #                               delimiter=' ',
+    #                               usecols=range(ranked_lists.shape[1]))
 
     # Denoise the image using the new weights based on the UDLF ranked lists
     num_weights = RESEARCH_AREA # TODO Make it a parameter
@@ -112,11 +113,11 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
         # Get rhe coordinates of every weight
         # excluding the last ones in the list (the ones with less rank)
         new_w_names = new_ranked_lists[pos, :num_weights]
-        weight_coords = np.where(w_names == new_w_names[:, None])[1]
+        weight_indices = np.where(w_names[ix, iy, :num_weights] == new_w_names[:, None])[1]
 
         # Calculate the desnoised value of each pixel
-        sum_wI[ix, iy] = np.sum(ima_nse[ix, iy] * w_values[ix, iy, weight_coords])
-        sum_w[ix, iy] = np.sum(w_values[ix, iy, weight_coords])
+        sum_wI[ix, iy] = np.sum(ima_nse[ix, iy] * w_values[ix, iy, weight_indices])
+        sum_w[ix, iy] = np.sum(w_values[ix, iy, weight_indices])
 
     ima_fil = sum_wI / sum_w
     return ima_fil
