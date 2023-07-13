@@ -29,7 +29,6 @@ def main():
 
     # estimate the noise standard deviation from the noisy image
     sigma_est = np.mean(estimate_sigma(im_nse, channel_axis=-1))
-    print('estimated noise standard deviation =', sigma_est)
 
     # Determine the patch shape
     shape = 'square'
@@ -60,41 +59,38 @@ def main():
     plt.subplot(1, 3, 1)
     plt.xlabel('Noise image')
     plt.imshow(im_nse, cmap='gray')
-    
     plt.subplot(1, 3, 2)
     plt.xlabel('NLM image')
     plt.imshow(im_fil1, cmap='gray')
-    
     plt.subplot(1, 3, 3)
     plt.xlabel('LHRR+NLM image')
     plt.imshow(im_fil2, cmap='gray')
-    
     plt.savefig('output/' + im_name + '_denoise.png')
     plt.show()
     
-
     # Evaluate and save info
     level = logging.INFO
-    strfmt = "  %(message)s"
+    strfmt = '  %(message)s'
     handlers = [logging.FileHandler('output/evaluation.log'),
                 logging.StreamHandler()]
     logging.basicConfig(level=level, format=strfmt, handlers=handlers)
     
-    logging.info(f"Image: {im_name}")
-    logging.info("Non-Local Means SAP:")
-    logging.info(f"Time: {nlmeans_sap_time}")
-    logging.info(f"PSNR: {psnr(im, im_fil1, data_range=im_fil1.max() - im_fil1.min())}")
-    logging.info(f"SSIM: {ssim(im, im_fil1, data_range=im_fil1.max() - im_fil1.min())}")
-    logging.info(f"MSE:  {mse(im, im_fil1)}")
+    logging.info(f'Image: {im_name}')
+    logging.info(f'estimated noise standard deviation: {sigma_est}')
+    logging.info('Non-Local Means SAP:')
+    logging.info(f'Time: {nlmeans_sap_time}')
+    logging.info(f'PSNR: {psnr(im, im_fil1, data_range=im_fil1.max() - im_fil1.min())}')
+    logging.info(f'SSIM: {ssim(im, im_fil1, data_range=im_fil1.max() - im_fil1.min())}')
+    logging.info(f'MSE:  {mse(im, im_fil1)}')
 
-    print("\n" + ("-" * 50) + "\n")
+    print('\n' + ('-' * 50) + '\n')
     
     # Evaluate UDLF nlmeans
-    logging.info("ULDF Non-Local Means:")
-    logging.info(f"Time: {nlmeans_uldf_time}")
-    logging.info(f"PSNR: {psnr(im, im_fil2, data_range=im_fil2.max() - im_fil2.min())}")
-    logging.info(f"SSIM: {ssim(im, im_fil2, data_range=im_fil2.max() - im_fil2.min())}")
-    logging.info(f"MSE:  {mse(im, im_fil2)}")
+    logging.info('ULDF Non-Local Means:')
+    logging.info(f'Time: {nlmeans_uldf_time}')
+    logging.info(f'PSNR: {psnr(im, im_fil2, data_range=im_fil2.max() - im_fil2.min())}')
+    logging.info(f'SSIM: {ssim(im, im_fil2, data_range=im_fil2.max() - im_fil2.min())}')
+    logging.info(f'MSE:  {mse(im, im_fil2)}')
     
 if __name__ == '__main__':
     main()
