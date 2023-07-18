@@ -5,7 +5,7 @@ from pyUDLF.utils import inputType
 
 import os
 
-def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
+def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     # This is a simple implementation of NL means:
     #
     #   Buades, A. and Coll, B. and Morel, J.M.,
@@ -43,14 +43,15 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
     # Main loop
     for dx in range(-hW, hW+1):
         for dy in range(-hW, hW+1):
+            x2range = np.mod(np.arange(0, M) + dx - 1, M)
+            y2range = np.mod(np.arange(0, N) + dy - 1, N)
+
             # Restrict the search window to avoid the central pixel
             if (dx == 0 and dy == 0):
                 # For the central weight we follow the idea of:
                 #   "On two parameters for denoising with Non-Local Means"
                 #   J. Salmon, IEEE Signal Process. Lett., 2010
                 w = np.ones((M, N)) * np.exp(-2*sig**2/tau**2)
-                x2range = np.arange(0, M)
-                y2range = np.arange(0, N)
                 w_values[:,:,w_num] = w
                 w_names[:,:,w_num] = (x2range.reshape((M, 1)) * M +
                                       y2range.reshape((1, N))).astype(int)
@@ -61,9 +62,6 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
             # if the disk shape is choose
             if (shape == 'disk') and dx**2 + dy**2 > hW**2:
                     continue
-
-            x2range = np.mod(np.arange(0, M) + dx - 1, M)
-            y2range = np.mod(np.arange(0, N) + dy - 1, N)
 
             # Calculate the Euclidean distance between all pairs of
             # patches in the direction (dx, dy)
@@ -101,17 +99,18 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape):
     #                               usecols=range(ranked_lists.shape[1]))
 
     # Denoise the image using the new weights based on the UDLF ranked lists
-    num_weights = RESEARCH_AREA # TODO Make it a parameter
+    if num_weights == None:
+        num_weights == RESEARCH_AREA
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
-    new_ranked_lists = ranked_lists
+    new_ranked_lists = ranked_lists # TEMPORARY for tests only
     for pos in range(new_ranked_lists.shape[0]):
         # Get image coordinates giving the ranked list position
         ix = pos // M
         iy = pos % M
 
-        # Get rhe coordinates of every weight
-        # excluding the last ones in the list (the ones with less rank)
+        # Get the indices of every weight
+        # excluding the last `num_weights` of the list
         new_w_names = new_ranked_lists[pos, :num_weights]
         weight_indices = np.where(w_names[ix, iy, :num_weights] == new_w_names[:, None])[1]
 
