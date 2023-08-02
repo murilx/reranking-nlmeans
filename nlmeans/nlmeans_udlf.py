@@ -105,18 +105,22 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     new_ranked_lists = ranked_lists # TEMPORARY for tests only
 
     for pos in range(new_ranked_lists.shape[0]):
-        # Get image coordinates giving the ranked list position
-        ix = pos // M
-        iy = pos % M
+        # Get weight coordinates giving the ranked list position
+        wx = pos // M
+        wy = pos % M
+
+        # Get the image coordinates giving the ranked list values
+        ix = new_ranked_lists[pos, :] // M
+        iy = new_ranked_lists[pos, :] % M
 
         # Get the indices of every weight
         # excluding the last `num_weights` of the list
         new_w_names = new_ranked_lists[pos, :num_weights]
-        weight_indices = np.where(w_names[ix, iy, :num_weights] == new_w_names[:, None])[1]
+        weight_indices = np.where(w_names[wx, wy, :num_weights] == new_w_names[:, None])[1]
 
         # Calculate the desnoised value of each pixel
-        sum_wI[ix, iy] = np.sum(ima_nse[ix, iy] * w_values[ix, iy, weight_indices])
-        sum_w[ix, iy] = np.sum(w_values[ix, iy, weight_indices])
+        sum_wI[wx, wy] = np.sum(ima_nse[ix, iy] * w_values[wx, wy, weight_indices])
+        sum_w[wx, wy] = np.sum(w_values[wx, wy, weight_indices])
     
     ima_fil = sum_wI / sum_w
     return ima_fil
