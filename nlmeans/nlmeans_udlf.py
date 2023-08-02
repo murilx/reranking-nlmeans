@@ -72,7 +72,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
             # kernel (this is a critical step!)
             w = np.exp(- diff / tau**2)
 
-            # Save the weight matrix and its identifier
+            # Save the weight matrix and its identifiers
             w_values[:,:,w_num] = w
             w_names[:,:,w_num] = x2range.reshape((M, 1)) * M + y2range.reshape((1, N))
             w_num += 1
@@ -91,7 +91,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
     # Run the UDLF framework to get a ranked list of weights
     # TODO For the none parameter udlf cannot run and return the message "Killed"
-    udlf.run(input_data, get_output=True)
+    # udlf.run(input_data, get_output=True)
     # new_ranked_lists = np.loadtxt('output.txt',
     #                               dtype=int,
     #                               delimiter=' ',
@@ -103,20 +103,9 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
     new_ranked_lists = ranked_lists # TEMPORARY for tests only
-    for pos in range(new_ranked_lists.shape[0]):
-        # Get image coordinates giving the ranked list position
-        ix = pos // M
-        iy = pos % M
 
-        # Get the indices of every weight
-        # excluding the last `num_weights` of the list
-        new_w_names = new_ranked_lists[pos, :num_weights]
-        weight_indices = np.where(w_names[ix, iy, :num_weights] == new_w_names[:, None])[1]
-
-        # Calculate the desnoised value of each pixel
-        sum_wI[ix, iy] = np.sum(ima_nse[ix, iy] * w_values[ix, iy, weight_indices])
-        sum_w[ix, iy] = np.sum(w_values[ix, iy, weight_indices])
-
+    # TODO: FIND A METHOD OF DENOISE GIVEN THE NEW RANKED LIST
+    
     ima_fil = sum_wI / sum_w
     return ima_fil
 
