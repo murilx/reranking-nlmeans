@@ -79,13 +79,12 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
     # Create the ranked list of weight matrices for udlf
     ranked_lists = np.zeros((M * N, RESEARCH_AREA), dtype=int)
-    rl = np.zeros((RESEARCH_AREA, 2), dtype=int)
     for i in range(M):
         for j in range(N):
-            rl[:, 0] = np.copy(w_names[i, j, :])
-            rl[:, 1] = np.copy(w_values[i, j, :])
-            rl = rl[rl[:, 1].argsort()]
-            ranked_lists[i * M + j, :] = np.copy(rl[:, 0]) 
+            rl = np.rec.fromarrays((w_names[i, j, :], w_values[i, j, :]),
+                                   names=('names', 'values'))
+            rl = rl[rl['values'].argsort()]
+            ranked_lists[i * M + j, :] = np.copy(rl['names'])
 
     # Create the input file for the UDLF
     np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
