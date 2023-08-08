@@ -77,15 +77,20 @@ def main():
     
     logging.info(f'Image: {im_name}')
     logging.info(f'estimated noise standard deviation: {sigma_est}')
+
+    logging.info('Noised Image:')
+    logging.info(f'PSNR: {psnr(im, im_nse, data_range=im_nse.max() - im_nse.min())}')
+    logging.info(f'SSIM: {ssim(im, im_nse, data_range=im_nse.max() - im_nse.min())}')
+    logging.info(f'MSE:  {mse(im, im_nse)}')
+    print('\n' + ('-' * 50) + '\n')
+
     logging.info('Non-Local Means SAP:')
     logging.info(f'Time: {nlmeans_sap_time}')
     logging.info(f'PSNR: {psnr(im, im_fil1, data_range=im_fil1.max() - im_fil1.min())}')
     logging.info(f'SSIM: {ssim(im, im_fil1, data_range=im_fil1.max() - im_fil1.min())}')
     logging.info(f'MSE:  {mse(im, im_fil1)}')
-
     print('\n' + ('-' * 50) + '\n')
     
-    # Evaluate UDLF nlmeans
     logging.info('ULDF Non-Local Means:')
     logging.info(f'Time: {nlmeans_uldf_time}')
     logging.info(f'PSNR: {psnr(im, im_fil2, data_range=im_fil2.max() - im_fil2.min())}')
