@@ -51,10 +51,8 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
                 # For the central weight we follow the idea of:
                 #   "On two parameters for denoising with Non-Local Means"
                 #   J. Salmon, IEEE Signal Process. Lett., 2010
-                w = np.ones((M, N)) * np.exp(-2*sig**2/tau**2)
-                w_values[:,:,w_num] = w
-                w_names[:,:,w_num] = (x2range.reshape((M, 1)) * M +
-                                      y2range.reshape((1, N))).astype(int)
+                w_values[:,:,w_num] = np.exp(-2*sig**2/tau**2)
+                w_names[:,:,w_num] = np.ravel_multi_index([x2range, y2range], (M,N))
                 w_num += 1
                 continue
             
@@ -74,7 +72,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
             # Save the weight matrix and its identifiers
             w_values[:,:,w_num] = w
-            w_names[:,:,w_num] = x2range.reshape((M, 1)) * M + y2range.reshape((1, N))
+            w_names[:,:,w_num] = np.ravel_multi_index([x2range, y2range], (M,N))
             w_num += 1
 
     # Create the ranked list of weight matrices for udlf
@@ -106,12 +104,10 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
     for pos in range(new_ranked_lists.shape[0]):
         # Get weight coordinates giving the ranked list position
-        wx = pos // M
-        wy = pos % M
+        wx, wy = np.unravel_index(pos, (M,N))
 
         # Get the image coordinates giving the ranked list values
-        ix = new_ranked_lists[pos, :] // M
-        iy = new_ranked_lists[pos, :] % M
+        ix, iy = np.unravel_index(new_ranked_lists[pos, :], (M,N))
 
         # Get the indices of every weight
         # excluding the last `num_weights` of the list
@@ -138,8 +134,8 @@ def udlf_config(size_dataset, L):
 
     # Input dataset files
     input_data.set_param('UDL_TASK', 'UDL')
-    # input_data.set_param('UDL_METHOD', 'LHRR')
-    input_data.set_param('UDL_METHOD', 'NONE')
+    input_data.set_param('UDL_METHOD', 'LHRR')
+    # input_data.set_param('UDL_METHOD', 'NONE')
     input_data.set_param('SIZE_DATASET', f'{size_dataset}')
     # input_data.set_param('INPUT_FILE_FORMAT', 'MATRIX')
     # input_data.set_param('INPUT_MATRIX_TYPE', 'DIST')
