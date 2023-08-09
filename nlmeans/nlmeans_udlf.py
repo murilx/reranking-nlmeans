@@ -85,7 +85,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
             ranked_lists[i * M + j, :] = np.copy(rl['names'])
 
     # Create the input file for the UDLF
-    np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
+    # np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
 
     # Run the UDLF framework to get a ranked list of weights
     # TODO For the none parameter udlf cannot run and return the message "Killed"
@@ -96,12 +96,12 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     #                               usecols=range(ranked_lists.shape[1]))
 
     # Denoise the image using the new weights based on the UDLF ranked lists
-    if num_weights == None:
-        num_weights == RESEARCH_AREA
+    if num_weights is None:
+        num_weights = RESEARCH_AREA
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
     new_ranked_lists = ranked_lists # TEMPORARY for tests only
-
+    
     for pos in range(new_ranked_lists.shape[0]):
         # Get weight coordinates giving the ranked list position
         wx, wy = np.unravel_index(pos, (M,N))
