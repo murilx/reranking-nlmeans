@@ -1,15 +1,16 @@
+import argparse
 import logging
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage import data
+from skimage.color import rgb2gray
 from skimage.util import random_noise
 from skimage.restoration import estimate_sigma
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import mean_squared_error as mse
 
-import sys
 from time import time
 
 from nlmeans.nlmeans_udlf import nlmeans_udlf
@@ -23,24 +24,42 @@ tau = parameters.tau
 
 
 def main():
-    # Load the image and add noise to it
-    if len(sys.argv) < 2:
-        im = data.camera()
-        im = im[100:300, 100:300]
-        im_name = 'camera'
-    else:
-        im = plt.imread(sys.argv[1]).astype('float')
-        im_name = os.path.splitext(os.path.basename(sys.argv[1]))[0]
+    # List of images that can be selected to test the denoising methods
+    images = ('astronaut',
+              'brick',
+              'camera',
+              'cat',
+              'checkerboard',
+              'clock',
+              'coffee',
+              'coins',
+              'grass',
+              'gravel',
+              'horse')
+    
+    parser = argparse.ArgumentParser(
+        description='Test and compare denoising methods.',
+        prog='test.py')
 
+    parser.add_argument('image', choices=images, nargs=1,
+                        help='image to be used in the test')
+    parser.add_argument('patch_shape', choices=['disk', 'square'], nargs=1,
+                        help='patch shape to used in the test')
+
+    args = parser.parse_args()
+
+    # Get the image from skimage.data and do the necessary preprocessing steps
+    im = getattr(data, args.image[0])()
+    im = im[100:300, 100:300]
+    if len(im.shape) >= 3:
+        im = rgb2gray(im)
+    im_name = args.image[0]
     im_nse = random_noise(im, var=sig ** 2)
 
     # estimate the noise standard deviation from the noisy image
     sigma_est = np.mean(estimate_sigma(im_nse, channel_axis=-1))
 
-    # Determine the patch shape
-    shape = 'square'
-    if(len(sys.argv) == 3):
-        shape = sys.argv[2]
+    shape = args.patch_shape[0]
 
     # Run filtering nlmeans SAP
     start_time = time()
