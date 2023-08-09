@@ -2,6 +2,7 @@ import logging
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from skimage import data
 from skimage.util import random_noise
 from skimage.restoration import estimate_sigma
 from skimage.metrics import peak_signal_noise_ratio as psnr
@@ -19,12 +20,18 @@ hW = parameters.hW
 hP = parameters.hP
 sig = parameters.sig
 tau = parameters.tau
-tau = 0.10
 
 
 def main():
     # Load the image and add noise to it
-    im = plt.imread(sys.argv[1]).astype('float')
+    if len(sys.argv) < 2:
+        im = data.camera()
+        im = im[100:300, 100:300]
+        im_name = 'camera'
+    else:
+        im = plt.imread(sys.argv[1]).astype('float')
+        im_name = os.path.splitext(os.path.basename(sys.argv[1]))[0]
+
     im_nse = random_noise(im, var=sig ** 2)
 
     # estimate the noise standard deviation from the noisy image
@@ -54,7 +61,6 @@ def main():
             pass
 
     # Show results
-    im_name = os.path.splitext(os.path.basename(sys.argv[1]))[0]
     plt.figure()
     plt.subplot(1, 3, 1)
     plt.xlabel('Noise image')
@@ -66,6 +72,10 @@ def main():
     plt.xlabel('LHRR+NLM image')
     plt.imshow(im_fil2, cmap='gray')
     plt.savefig('output/' + im_name + '_denoise.png')
+    plt.show()
+    
+    plt.figure()
+    plt.imshow(im_fil1 - im_fil2)
     plt.show()
     
     # Evaluate and save info
@@ -89,6 +99,7 @@ def main():
     logging.info(f'PSNR: {psnr(im, im_fil1, data_range=im_fil1.max() - im_fil1.min())}')
     logging.info(f'SSIM: {ssim(im, im_fil1, data_range=im_fil1.max() - im_fil1.min())}')
     logging.info(f'MSE:  {mse(im, im_fil1)}')
+
     print('\n' + ('-' * 50) + '\n')
     
     logging.info('ULDF Non-Local Means:')
