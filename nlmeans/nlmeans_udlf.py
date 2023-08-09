@@ -36,9 +36,8 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
 
     # Weight value and weight names matrices
-    w_values = np.zeros((M, N, RESEARCH_AREA))
-    w_names = np.zeros((M, N, RESEARCH_AREA), dtype=int)
-    w_num = 0
+    w_values = []
+    w_names = []
 
     # Main loop
     for dx in range(-hW, hW+1):
@@ -51,9 +50,8 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
                 # For the central weight we follow the idea of:
                 #   "On two parameters for denoising with Non-Local Means"
                 #   J. Salmon, IEEE Signal Process. Lett., 2010
-                w_values[:,:,w_num] = np.exp(-2*sig**2/tau**2)
-                w_names[:,:,w_num] = np.ravel_multi_index([x2range, y2range], (M,N))
-                w_num += 1
+                w_values.append(np.ones((M,N)) * np.exp(-2*sig**2/tau**2))
+                w_names.append(np.ones((M,N)) * np.ravel_multi_index([x2range, y2range], (M,N)))
                 continue
             
             # Restrict the search window to be circular
@@ -71,12 +69,16 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
             w = np.exp(- diff / tau**2)
 
             # Save the weight matrix and its identifiers
-            w_values[:,:,w_num] = w
-            w_names[:,:,w_num] = np.ravel_multi_index([x2range, y2range], (M,N))
-            w_num += 1
+            w_values.append(w)
+            w_names.append(np.ones((M,N)) * np.ravel_multi_index([x2range, y2range], (M,N)))
 
+    # Transform the python lists of matrices into a 3D numpy array
+    w_values = np.stack(w_values, axis=-1)
+    w_names = np.stack(w_names, axis=-1)
+    NEIGHBOURHOOD_PIXELS = w_values.shape[2]        
+    
     # Create the ranked list of weight matrices for udlf
-    ranked_lists = np.zeros((M * N, RESEARCH_AREA), dtype=int)
+    ranked_lists = np.zeros((M * N, NEIGHBOURHOOD_PIXELS), dtype=int)
     for i in range(M):
         for j in range(N):
             rl = np.rec.fromarrays((w_names[i, j, :], w_values[i, j, :]),
@@ -95,9 +97,6 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     #                               delimiter=' ',
     #                               usecols=range(ranked_lists.shape[1]))
 
-    # Denoise the image using the new weights based on the UDLF ranked lists
-    if num_weights is None:
-        num_weights = RESEARCH_AREA
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
     new_ranked_lists = ranked_lists # TEMPORARY for tests only
