@@ -42,22 +42,17 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     # Main loop
     for dx in range(-hW, hW+1):
         for dy in range(-hW, hW+1):
-            x2range = np.mod(np.arange(0, M) + dx - 1, M)
-            y2range = np.mod(np.arange(0, N) + dy - 1, N)
-
             # Restrict the search window to avoid the central pixel
             if (dx == 0 and dy == 0):
-                # For the central weight we follow the idea of:
-                #   "On two parameters for denoising with Non-Local Means"
-                #   J. Salmon, IEEE Signal Process. Lett., 2010
-                w_values.append(np.ones((M,N)) * np.exp(-2*sig**2/tau**2))
-                w_names.append(np.ones((M,N)) * np.ravel_multi_index([x2range, y2range], (M,N)))
                 continue
             
             # Restrict the search window to be circular
             # if the disk shape is choose
             if (shape == 'disk') and dx**2 + dy**2 > hW**2:
                     continue
+
+            x2range = np.mod(np.arange(0, M) + dx - 1, M)
+            y2range = np.mod(np.arange(0, N) + dy - 1, N)
 
             # Calculate the Euclidean distance between all pairs of
             # patches in the direction (dx, dy)
@@ -71,11 +66,17 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
             # Save the weight matrix and its identifiers
             w_values.append(w)
             w_names.append(np.ones((M,N)) * np.ravel_multi_index([x2range, y2range], (M,N)))
+            
+    # For the central weight we follow the idea of:
+    #   "On two parameters for denoising with Non-Local Means"
+    #   J. Salmon, IEEE Signal Process. Lett., 2010
+    w_values.append(np.ones((M,N)) * np.exp(-2*sig**2/tau**2))
+    w_names.append(np.arange(M * N).reshape(M,N))
 
     # Transform the python lists of matrices into a 3D numpy array
     w_values = np.stack(w_values, axis=-1)
-    w_names = np.stack(w_names, axis=-1)
-    NEIGHBOURHOOD_PIXELS = w_values.shape[2]        
+    w_names = np.stack(w_names, axis=-1).astype(int)
+    NEIGHBOURHOOD_PIXELS = w_values.shape[2]
     
     # Create the ranked list of weight matrices for udlf
     ranked_lists = np.zeros((M * N, NEIGHBOURHOOD_PIXELS), dtype=int)
