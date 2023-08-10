@@ -92,11 +92,7 @@ def main():
     plt.imshow(im_fil2, cmap='gray')
     plt.savefig('output/' + im_name + '_denoise.png')
     plt.show()
-    
-    plt.figure()
-    plt.imshow(im_fil1 - im_fil2)
-    plt.show()
-    
+
     # Evaluate and save info
     level = logging.INFO
     strfmt = '  %(message)s'
