@@ -29,11 +29,11 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
 
     # UDLF configuration
-    input_data = udlf_config(size_dataset=M*N, L=RESEARCH_AREA)
+    # input_data = udlf_config(size_dataset=M*N, L=RESEARCH_AREA)
 
     # Creation of the weight names list
-    weight_names_list = np.reshape(np.arange(0, M * N, dtype=int), (M * N, 1))
-    np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
+    # weight_names_list = np.reshape(np.arange(0, M * N, dtype=int), (M * N, 1))
+    # np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
 
     # Weight value and weight names matrices
     w_values = []
