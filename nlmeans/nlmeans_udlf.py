@@ -70,7 +70,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     # For the central weight we follow the idea of:
     #   "On two parameters for denoising with Non-Local Means"
     #   J. Salmon, IEEE Signal Process. Lett., 2010
-    w_values.append(np.ones((M,N)) * np.exp(-2*sig**2/tau**2))
+    w_values.append(np.zeros((M,N)) + np.exp(-2*sig**2/tau**2))
     w_names.append(np.arange(M * N).reshape(M,N))
 
     # Transform the python lists of matrices into a 3D numpy array
