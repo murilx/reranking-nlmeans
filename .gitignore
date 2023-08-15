@@ -13,5 +13,4 @@ input.txt
 output.txt
 
 # Internal files used for debug
-debug.txt
-aux.txt
+debug/
