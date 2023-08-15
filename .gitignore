@@ -7,3 +7,11 @@ output/
 
 # UDLF
 udlf/
+log.txt
+list.txt
+input.txt
+output.txt
+
+# Internal files used for debug
+debug.txt
+aux.txt
