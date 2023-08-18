@@ -18,7 +18,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     M, N = ima_nse.shape
     cM, cN = fourier_center(M, N)
     Y, X = np.meshgrid(np.arange(0, M), np.arange(0, N))
-    RESEARCH_AREA = (2*hW+1)**2
+    RESEARCH_AREA = (2*hW + 1)**2
 
     patch_shape = np.zeros((M, N))
     if(shape == 'square'):
@@ -65,13 +65,14 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
             # Save the weight matrix and its identifiers
             w_values.append(w)
-            w_names.append(np.ones((M,N)) * np.ravel_multi_index([x2range, y2range], (M,N)))
+            w_names.append(np.ones((M, N)) *
+                           np.ravel_multi_index([x2range, y2range], (M, N)))
             
     # For the central weight we follow the idea of:
     #   "On two parameters for denoising with Non-Local Means"
     #   J. Salmon, IEEE Signal Process. Lett., 2010
-    w_values.append(np.zeros((M,N)) + np.exp(-2*sig**2/tau**2))
-    w_names.append(np.arange(M * N).reshape(M,N))
+    w_values.append(np.zeros((M, N)) + np.exp(-2*sig**2/tau**2))
+    w_names.append(np.arange(M * N).reshape(M, N))
 
     # Transform the python lists of matrices into a 3D numpy array
     w_values = np.stack(w_values, axis=-1)
@@ -104,18 +105,20 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     
     for pos in range(new_ranked_lists.shape[0]):
         # Get weight coordinates giving the ranked list position
-        wx, wy = np.unravel_index(pos, (M,N))
+        wx, wy = np.unravel_index(pos, (M, N))
 
         # Get the image coordinates giving the ranked list values
-        ix, iy = np.unravel_index(new_ranked_lists[pos, :], (M,N))
+        ix, iy = np.unravel_index(new_ranked_lists[pos, :], (M, N))
 
         # Get the indices of every weight
         # excluding the last `num_weights` of the list
         new_w_names = new_ranked_lists[pos, :num_weights]
-        weight_indices = np.where(w_names[wx, wy, :num_weights] == new_w_names[:, None])[1]
+        weight_indices = np.where(
+            w_names[wx, wy, :num_weights] == new_w_names[:, None])[1]
 
         # Calculate the desnoised value of each pixel
-        sum_wI[wx, wy] = np.sum(ima_nse[ix, iy] * w_values[wx, wy, weight_indices])
+        sum_wI[wx, wy] = np.sum(ima_nse[ix, iy] *
+                                w_values[wx, wy, weight_indices])
         sum_w[wx, wy] = np.sum(w_values[wx, wy, weight_indices])
     
     ima_fil = sum_wI / sum_w
@@ -135,11 +138,7 @@ def udlf_config(size_dataset, L):
     # Input dataset files
     input_data.set_param('UDL_TASK', 'UDL')
     input_data.set_param('UDL_METHOD', 'LHRR')
-    # input_data.set_param('UDL_METHOD', 'NONE')
     input_data.set_param('SIZE_DATASET', f'{size_dataset}')
-    # input_data.set_param('INPUT_FILE_FORMAT', 'MATRIX')
-    # input_data.set_param('INPUT_MATRIX_TYPE', 'DIST')
-    # input_data.set_param('MATRIX_TO_RK_SORTING', 'HEAP')
     input_data.set_param('INPUT_FILE_FORMAT', 'RK')
     input_data.set_param('INPUT_RK_FORMAT', 'NUM')
     input_data.set_param('INPUT_FILE', 'input.txt')
@@ -149,8 +148,6 @@ def udlf_config(size_dataset, L):
     input_data.set_param('OUTPUT_FILE', 'TRUE')
     input_data.set_param('OUTPUT_FILE_FORMAT', 'RK')
     input_data.set_param('OUTPUT_RK_FORMAT', 'NUM')
-    # input_data.set_param('OUTPUT_FILE_FORMAT', 'MATRIX')
-    # input_data.set_param('OUTPUT_MATRIX_TYPE', 'DIST')
     input_data.set_param('OUTPUT_FILE_PATH', 'output')
 
     # Evaluation settings
