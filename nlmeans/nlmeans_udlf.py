@@ -77,10 +77,20 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     # Transform the python lists of matrices into a 3D numpy array
     w_values = np.stack(w_values, axis=-1)
     w_names = np.stack(w_names, axis=-1).astype(int)
-    NEIGHBOURHOOD_PIXELS = w_values.shape[2]
+    NEIGHBOURHOOD_SIZE = w_values.shape[2]
+
+    # TEMP
+    # sum_wI = np.zeros((M,N))
+    # sum_w = np.zeros((M,N))
+    # for i in range(NEIGHBOURHOOD_PIXELS):
+    #     ix, iy = np.unravel_index(w_names[:,:,i], (M,N))
+    #     sum_wI += ima_nse[ix, iy] * w_values[:,:,i]
+    #     sum_w += w_values[:,:,i]
+    # ima_fil = sum_wI/sum_w
+    # return ima_fil
     
     # Create the ranked list of weight matrices for udlf
-    ranked_lists = np.zeros((M * N, NEIGHBOURHOOD_PIXELS), dtype=int)
+    ranked_lists = np.zeros((M * N, NEIGHBOURHOOD_SIZE), dtype=int)
     for i in range(M):
         for j in range(N):
             rl = np.rec.fromarrays((w_names[i, j, :], w_values[i, j, :]),
@@ -92,7 +102,6 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     # np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
 
     # Run the UDLF framework to get a ranked list of weights
-    # TODO For the none parameter udlf cannot run and return the message "Killed"
     # udlf.run(input_data, get_output=True)
     # new_ranked_lists = np.loadtxt('output.txt',
     #                               dtype=int,
@@ -101,7 +110,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
-    new_ranked_lists = ranked_lists # TEMPORARY for tests only
+    new_ranked_lists = ranked_lists # TEMP for tests only
     
     for pos in range(new_ranked_lists.shape[0]):
         # Get weight coordinates giving the ranked list position
@@ -113,13 +122,16 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
         # Get the indices of every weight
         # excluding the last `num_weights` of the list
         new_w_names = new_ranked_lists[pos, :num_weights]
-        weight_indices = np.where(
-            w_names[wx, wy, :num_weights] == new_w_names[:, None])[1]
+        new_w_names = new_w_names[:, None]
+        w_index = np.where(w_names[wx, wy, :num_weights] == new_w_names)[1]
 
         # Calculate the desnoised value of each pixel
-        sum_wI[wx, wy] = np.sum(ima_nse[ix, iy] *
-                                w_values[wx, wy, weight_indices])
-        sum_w[wx, wy] = np.sum(w_values[wx, wy, weight_indices])
+        #TEMP
+        try:
+            sum_wI[wx, wy] = np.sum(ima_nse[ix, iy] * w_values[wx, wy, w_index])
+            sum_w[wx, wy] = np.sum(w_values[wx, wy, w_index])
+        except:
+            pass
     
     ima_fil = sum_wI / sum_w
     return ima_fil
