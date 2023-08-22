@@ -133,5 +133,6 @@ def main():
     logging.info(f'SSIM: {ssim(im, im_fil2, data_range=im_fil2.max() - im_fil2.min())}')
     logging.info(f'MSE:  {mse(im, im_fil2)}')
     
+
 if __name__ == '__main__':
     main()

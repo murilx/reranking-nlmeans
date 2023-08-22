@@ -79,16 +79,6 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     w_names = np.stack(w_names, axis=-1).astype(int)
     NEIGHBOURHOOD_SIZE = w_values.shape[2]
 
-    # TEMP
-    # sum_wI = np.zeros((M,N))
-    # sum_w = np.zeros((M,N))
-    # for i in range(NEIGHBOURHOOD_PIXELS):
-    #     ix, iy = np.unravel_index(w_names[:,:,i], (M,N))
-    #     sum_wI += ima_nse[ix, iy] * w_values[:,:,i]
-    #     sum_w += w_values[:,:,i]
-    # ima_fil = sum_wI/sum_w
-    # return ima_fil
-    
     # Create the ranked list of weight matrices for udlf
     ranked_lists = np.zeros((M * N, NEIGHBOURHOOD_SIZE), dtype=int)
     for i in range(M):
@@ -122,16 +112,11 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
         # Get the indices of every weight
         # excluding the last `num_weights` of the list
         new_w_names = new_ranked_lists[pos, :num_weights]
-        new_w_names = new_w_names[:, None]
-        w_index = np.where(w_names[wx, wy, :num_weights] == new_w_names)[1]
-
+        w_index = w_names[wx, wy, :].argsort()[new_w_names.argsort().argsort()]
+        
         # Calculate the desnoised value of each pixel
-        #TEMP
-        try:
-            sum_wI[wx, wy] = np.sum(ima_nse[ix, iy] * w_values[wx, wy, w_index])
-            sum_w[wx, wy] = np.sum(w_values[wx, wy, w_index])
-        except:
-            pass
+        sum_wI[wx, wy] = np.sum(ima_nse[ix, iy] * w_values[wx, wy, w_index])
+        sum_w[wx, wy] = np.sum(w_values[wx, wy, w_index])
     
     ima_fil = sum_wI / sum_w
     return ima_fil
