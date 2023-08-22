@@ -29,11 +29,11 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
 
     # UDLF configuration
-    # input_data = udlf_config(size_dataset=M*N, L=RESEARCH_AREA)
+    input_data = udlf_config(size_dataset=M*N, L=RESEARCH_AREA)
 
     # Creation of the weight names list
-    # weight_names_list = np.reshape(np.arange(0, M * N, dtype=int), (M * N, 1))
-    # np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
+    weight_names_list = np.reshape(np.arange(0, M * N, dtype=int), (M * N, 1))
+    np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
 
     # Weight value and weight names matrices
     w_values = []
@@ -89,25 +89,23 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
             ranked_lists[i * M + j, :] = np.copy(rl['names'])
 
     # Create the input file for the UDLF
-    # np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
+    np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
 
     # Run the UDLF framework to get a ranked list of weights
-    # udlf.run(input_data, get_output=True)
-    # new_ranked_lists = np.loadtxt('output.txt',
-    #                               dtype=int,
-    #                               delimiter=' ',
-    #                               usecols=range(ranked_lists.shape[1]))
+    udlf.run(input_data, get_output=True)
+    new_ranked_lists = np.loadtxt('output.txt',
+                                  dtype=int,
+                                  delimiter=' ',
+                                  usecols=range(ranked_lists.shape[1]))
 
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
-    new_ranked_lists = ranked_lists # TEMP for tests only
-    
     for pos in range(new_ranked_lists.shape[0]):
         # Get weight coordinates giving the ranked list position
         wx, wy = np.unravel_index(pos, (M, N))
 
         # Get the image coordinates giving the ranked list values
-        ix, iy = np.unravel_index(new_ranked_lists[pos, :], (M, N))
+        ix, iy = np.unravel_index(new_ranked_lists[pos, :num_weights], (M, N))
 
         # Get the indices of every weight
         # excluding the last `num_weights` of the list
