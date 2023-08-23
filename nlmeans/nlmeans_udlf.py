@@ -18,7 +18,6 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     M, N = ima_nse.shape
     cM, cN = fourier_center(M, N)
     Y, X = np.meshgrid(np.arange(0, M), np.arange(0, N))
-    RESEARCH_AREA = (2*hW + 1)**2
 
     patch_shape = np.zeros((M, N))
     if(shape == 'square'):
@@ -27,13 +26,6 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
         patch_shape = ((Y - cM)**2 + (X - cN)**2) <= hP**2
     patch_shape = patch_shape / np.sum(patch_shape)
     patch_shape = np.conj(np.fft.fft2(np.fft.fftshift(patch_shape)))
-
-    # UDLF configuration
-    input_data = udlf_config(size_dataset=M*N, L=RESEARCH_AREA)
-
-    # Creation of the weight names list
-    weight_names_list = np.reshape(np.arange(0, M * N, dtype=int), (M * N, 1))
-    np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
 
     # Weight value and weight names matrices
     w_values = []
@@ -90,6 +82,13 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
     # Create the input file for the UDLF
     np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
+    
+    # Creation of the weight names list
+    weight_names_list = np.reshape(np.arange(0, M * N, dtype=int), (M * N, 1))
+    np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
+    
+    # UDLF configuration
+    input_data = udlf_config(size_dataset=M*N, L=NEIGHBOURHOOD_SIZE)
 
     # Run the UDLF framework to get a ranked list of weights
     udlf.run(input_data, get_output=True)
@@ -101,15 +100,16 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
     for pos in range(new_ranked_lists.shape[0]):
+        # Get the `num_weights` first elements of the ranked list array at `pos` 
+        new_w_names = new_ranked_lists[pos, :num_weights]
+
         # Get weight coordinates giving the ranked list position
         wx, wy = np.unravel_index(pos, (M, N))
 
         # Get the image coordinates giving the ranked list values
-        ix, iy = np.unravel_index(new_ranked_lists[pos, :num_weights], (M, N))
+        ix, iy = np.unravel_index(new_w_names, (M, N))
 
         # Get the indices of every weight
-        # excluding the last `num_weights` of the list
-        new_w_names = new_ranked_lists[pos, :num_weights]
         w_index = w_names[wx, wy, :].argsort()[new_w_names.argsort().argsort()]
         
         # Calculate the desnoised value of each pixel
