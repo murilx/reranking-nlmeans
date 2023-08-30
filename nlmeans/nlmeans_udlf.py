@@ -45,10 +45,11 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
             x2range = np.mod(np.arange(0, M) + dx - 1, M)
             y2range = np.mod(np.arange(0, N) + dy - 1, N)
+            x_idx, y_idx = np.meshgrid(x2range, y2range, indexing='ij')
 
             # Calculate the Euclidean distance between all pairs of
             # patches in the direction (dx, dy)
-            diff = (ima_nse - ima_nse[x2range, y2range])**2
+            diff = (ima_nse - ima_nse[x_idx, y_idx])**2
             diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
             
             # Convert the distance to weights using an exponential
@@ -57,8 +58,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
             # Save the weight matrix and its identifiers
             w_values.append(w)
-            w_names.append(np.ones((M, N)) *
-                           np.ravel_multi_index([x2range, y2range], (M, N)))
+            w_names.append(np.ravel_multi_index([x_idx, y_idx], (M, N)))
             
     # For the central weight we follow the idea of:
     #   "On two parameters for denoising with Non-Local Means"
