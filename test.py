@@ -63,7 +63,7 @@ def main():
     # If image is rgb converts it to grayscale
     if len(im.shape) == 3:
         im = rgb2gray(im)
-    
+
     im_nse = random_noise(im, var=sig ** 2)
 
     # estimate the noise standard deviation from the noisy image

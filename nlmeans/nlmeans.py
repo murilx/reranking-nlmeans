@@ -42,8 +42,8 @@ def nlmeans(ima_nse, hW, hP, tau, sig, shape):
             if (shape == 'disk') and dx**2 + dy**2 > hW**2:
                     continue
 
-            x2range = np.mod(np.arange(0, M) + dx - 1, M) 
-            y2range = np.mod(np.arange(0, N) + dy - 1, N) 
+            x2range = np.mod(np.arange(0, M) + dx, M)
+            y2range = np.mod(np.arange(0, N) + dy, N)
 
             # Calculate the Euclidean distance between all pairs of
             # patches in the direction (dx, dy)
