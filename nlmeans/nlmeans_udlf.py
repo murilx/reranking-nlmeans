@@ -37,7 +37,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
             # Restrict the search window to avoid the central pixel
             if (dx == 0 and dy == 0):
                 continue
-            
+
             # Restrict the search window to be circular
             # if the disk shape is choose
             if (shape == 'disk') and dx**2 + dy**2 > hW**2:
@@ -51,7 +51,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
             # patches in the direction (dx, dy)
             diff = (ima_nse - ima_nse[x_idx, y_idx])**2
             diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
-            
+
             # Convert the distance to weights using an exponential
             # kernel (this is a critical step!)
             w = np.exp(- diff / tau**2)
@@ -59,7 +59,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
             # Save the weight matrix and its identifiers
             w_values.append(w)
             w_names.append(np.ravel_multi_index([x_idx, y_idx], (M, N)))
-            
+
     # For the central weight we follow the idea of:
     #   "On two parameters for denoising with Non-Local Means"
     #   J. Salmon, IEEE Signal Process. Lett., 2010
@@ -82,11 +82,11 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
     # Create the input file for the UDLF
     np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
-    
+
     # Creation of the weight names list
     weight_names_list = np.reshape(np.arange(0, M * N, dtype=int), (M * N, 1))
     np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
-    
+
     # UDLF configuration
     input_data = udlf_config(size_dataset=M*N, L=NEIGHBOURHOOD_SIZE)
 
@@ -100,7 +100,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
     for pos in range(new_ranked_lists.shape[0]):
-        # Get the `num_weights` first elements of the ranked list array at `pos` 
+        # Get the `num_weights` first elements of the ranked list array at `pos`
         new_w_names = new_ranked_lists[pos, :num_weights]
 
         # Get weight coordinates giving the ranked list position
@@ -111,11 +111,11 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
 
         # Get the indices of every weight
         w_index = w_names[wx, wy, :].argsort()[new_w_names.argsort().argsort()]
-        
+
         # Calculate the desnoised value of each pixel
         sum_wI[wx, wy] = np.sum(ima_nse[ix, iy] * w_values[wx, wy, w_index])
         sum_w[wx, wy] = np.sum(w_values[wx, wy, w_index])
-    
+
     ima_fil = sum_wI / sum_w
     return ima_fil
 
@@ -138,7 +138,7 @@ def udlf_config(size_dataset, L):
     input_data.set_param('INPUT_RK_FORMAT', 'NUM')
     input_data.set_param('INPUT_FILE', 'input.txt')
     input_data.set_param('INPUT_FILE_LIST', 'list.txt')
-   
+
     # Output file settings
     input_data.set_param('OUTPUT_FILE', 'TRUE')
     input_data.set_param('OUTPUT_FILE_FORMAT', 'RK')
@@ -150,7 +150,7 @@ def udlf_config(size_dataset, L):
 
     # NONE method parameters
     input_data.set_param('PARAM_NONE_L', f'{L}')
-    
+
     # LHRR method parameters
     input_data.set_param('PARAM_LHRR_K', '18')
     input_data.set_param('PARAM_LHRR_L', f'{L}')
