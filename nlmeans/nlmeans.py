@@ -1,6 +1,7 @@
 import numpy as np
 from .fourier_center import fourier_center
 
+
 def nlmeans(ima_nse, hW, hP, tau, sig, shape):
     # This is a simple implementation of NL means:
     #
@@ -44,10 +45,11 @@ def nlmeans(ima_nse, hW, hP, tau, sig, shape):
 
             x2range = np.mod(np.arange(0, M) + dx, M)
             y2range = np.mod(np.arange(0, N) + dy, N)
+            x_idx, y_idx = np.meshgrid(x2range, y2range, indexing='ij')
 
             # Calculate the Euclidean distance between all pairs of
             # patches in the direction (dx, dy)
-            diff = (ima_nse - ima_nse[x2range, y2range])**2
+            diff = (ima_nse - ima_nse[x_idx, y_idx])**2
             diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
 
             # Convert the distance to weights using an exponential
@@ -56,7 +58,7 @@ def nlmeans(ima_nse, hW, hP, tau, sig, shape):
 
             # Increment accumulators for the weighted average
             sum_w += w
-            sum_wI += w * ima_nse[x2range, y2range]
+            sum_wI += w * ima_nse[x_idx, y_idx]
 
     # For the central weight we follow the idea of:
     #   "On two parameters for denoising with Non-Local Means"
