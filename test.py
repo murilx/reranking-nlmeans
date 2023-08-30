@@ -57,8 +57,8 @@ def main():
         im = im[100:300, 100:300]
         im_name = args.image[0]
     else:
-        im = plt.imread(sys.argv[1]).astype('float')
-        im_name = os.path.splitext(os.path.basename(sys.argv[1]))[0]
+        im = plt.imread(args.image[0]).astype('float')
+        im_name = os.path.splitext(os.path.basename(args.image[0]))[0]
 
     # If image is rgb converts it to grayscale
     if len(im.shape) == 3:
