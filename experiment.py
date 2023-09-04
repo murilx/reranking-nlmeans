@@ -22,10 +22,8 @@ OUT_DIR = './output'
 
 ex = Experiment()
 ex.observers.append(MongoObserver(
-    url = 'mongodb+srv://cluster0.cjdi4cp.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority',
-    db_name = 'Cluster0',
-    tls = True,
-    tlsCertificateKeyFile = '/home/murilo/Documentos/mongodb/X509-cert-3772382301992721094.pem',
+    url = 'localhost:27017',
+    db_name = 'sacred'
 ))
 
 # Configs for each UDLF Method
@@ -61,7 +59,7 @@ def cprr():
     }
 
 @ex.automain
-def main(_run, image, hW, hP, tau, sig, shape, n_w, udl_method, udl_params, seed):
+def main(_run, _log, image, hW, hP, tau, sig, shape, n_w, udl_method, udl_params, seed):
     # List of images that can be selected to test the denoising method
     images = ('astronaut',
               'brick',
@@ -116,13 +114,13 @@ def main(_run, image, hW, hP, tau, sig, shape, n_w, udl_method, udl_params, seed
     fmt_date = fmt_date.strftime('%d-%m-%Y-%H-%M') # day-month-year-hour-minute
 
     im_nse_file = os.path.join(OUT_DIR, f'{im_name}_noise_{fmt_date}_{seed}.png')
-    plt.imsave(im_nse_file, im_nse)
+    plt.imsave(im_nse_file, im_nse, cmap='gray')
 
     nl_file = os.path.join(OUT_DIR, f'{im_name}_nlmeans_{fmt_date}_{seed}.png')
-    plt.imsave(nl_file, im_fil1)
+    plt.imsave(nl_file, im_fil1, cmap='gray')
 
     udlf_file = os.path.join(OUT_DIR, f'{im_name}_udlf-{udl_method}-{shape}_{fmt_date}_{seed}.png')
-    plt.imsave(udlf_file, im_fil2)
+    plt.imsave(udlf_file, im_fil2, cmap='gray')
 
     ex.add_artifact(im_nse_file)
     ex.add_artifact(nl_file)
@@ -140,6 +138,24 @@ def main(_run, image, hW, hP, tau, sig, shape, n_w, udl_method, udl_params, seed
     udlf_noise_psnr = psnr(im, im_fil2, data_range=im_fil2.max() - im_fil2.min())
     udlf_noise_ssim = ssim(im, im_fil2, data_range=im_fil2.max() - im_fil2.min())
     udlf_noise_mse  = mse(im, im_fil2)
+
+    # Show information on stdout
+    _log.info('Noised Image:')
+    _log.info(f'PSNR:{im_noise_psnr}')
+    _log.info(f'SSIM:{im_noise_ssim}')
+    _log.info(f'MSE :{im_noise_mse}')
+
+    _log.info('Non-Local Means:')
+    _log.info(f'Time: {nlmeans_sap_time}')
+    _log.info(f'PSNR:{nlm_noise_psnr}')
+    _log.info(f'SSIM:{nlm_noise_ssim}')
+    _log.info(f'MSE :{nlm_noise_mse}')
+
+    _log.info('UDLF Non-Local Means:')
+    _log.info(f'Time: {nlmeans_udlf_time}')
+    _log.info(f'PSNR:{udlf_noise_psnr}')
+    _log.info(f'SSIM:{udlf_noise_ssim}')
+    _log.info(f'MSE :{udlf_noise_mse}')
 
     # Save info
     _run.info = {
