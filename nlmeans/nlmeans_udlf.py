@@ -104,22 +104,27 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, udl_method, udl_params, n_w):
 
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
-    for pos in range(new_ranked_lists.shape[0]):
+    if n_w is None or num_weights > NEIGHBOURHOOD_SIZE:
+        n_w = new_ranked_lists.shape[1]
+    for col in range(n_w):
         # Get the `num_weights` first elements of the ranked list array at `pos`
-        new_w_names = new_ranked_lists[pos, :n_w]
-
-        # Get weight coordinates giving the ranked list position
-        wx, wy = np.unravel_index(pos, (M, N))
+        new_w_names = new_ranked_lists[:, col].reshape(M, N)
 
         # Get the image coordinates giving the ranked list values
-        ix, iy = np.unravel_index(new_w_names, (M, N))
+        x_idx, y_idx = np.unravel_index(new_w_names, (M, N))
 
-        # Get the indices of every weight
-        w_index = w_names[wx, wy, :].argsort()[new_w_names.argsort().argsort()]
+        # Calculate the Euclidean distance between all pairs of
+        # patches in the direction (dx, dy)
+        diff = (ima_nse - ima_nse[x_idx, y_idx])**2
+        diff = np.real(np.fft.ifft2(patch_shape * np.fft.fft2(diff)))
+
+        # Convert the distance to weights using an exponential
+        # kernel (this is a critical step!)
+        w = np.exp(- diff / tau**2)
 
         # Calculate the desnoised value of each pixel
-        sum_wI[wx, wy] = np.sum(ima_nse[ix, iy] * w_values[wx, wy, w_index])
-        sum_w[wx, wy] = np.sum(w_values[wx, wy, w_index])
+        sum_wI += ima_nse[x_idx, y_idx] * w
+        sum_w += w
 
     ima_fil = sum_wI / sum_w
     return ima_fil
