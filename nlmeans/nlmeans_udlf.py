@@ -170,8 +170,8 @@ def udlf_config(size_dataset, L, udl_method, udl_params):
 
     # CPRR method parameters
     elif(udl_method == 'CPRR'):
-        input_data.set_param('PARAM_LHRR_K', f'{udl_params["k"]}')
-        input_data.set_param('PARAM_LHRR_L', f'{L}')
-        input_data.set_param('PARAM_LHRR_T', f'{udl_params["t"]}')
+        input_data.set_param('PARAM_CPRR_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_CPRR_L', f'{L}')
+        input_data.set_param('PARAM_CPRR_T', f'{udl_params["t"]}')
 
     return input_data
