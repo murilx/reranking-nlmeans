@@ -140,6 +140,9 @@ def main(_run, _log, image, hW, hP, tau, sig, shape, n_w, udl_method, udl_params
     udlf_noise_mse  = mse(im, im_fil2)
 
     # Show information on stdout
+
+    _log.info(f'Seed: {seed}')
+
     _log.info('Noised Image:')
     _log.info(f'PSNR:{im_noise_psnr}')
     _log.info(f'SSIM:{im_noise_ssim}')
