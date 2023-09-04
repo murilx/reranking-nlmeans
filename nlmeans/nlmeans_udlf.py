@@ -5,7 +5,7 @@ from pyUDLF.utils import inputType
 
 import os
 
-def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
+def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, udl_method, udl_params, n_w):
     # This is a simple implementation of NL means:
     #
     #   Buades, A. and Coll, B. and Morel, J.M.,
@@ -88,7 +88,12 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     np.savetxt('list.txt', weight_names_list, fmt='%d', delimiter=' ', newline='\n')
 
     # UDLF configuration
-    input_data = udlf_config(size_dataset=M*N, L=NEIGHBOURHOOD_SIZE)
+    input_data = udlf_config(
+        size_dataset = M*N,
+        L = NEIGHBOURHOOD_SIZE,
+        udl_method = udl_method,
+        udl_params = udl_params
+    )
 
     # Run the UDLF framework to get a ranked list of weights
     udlf.run(input_data, get_output=True)
@@ -101,7 +106,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     sum_wI = np.zeros((M, N))
     for pos in range(new_ranked_lists.shape[0]):
         # Get the `num_weights` first elements of the ranked list array at `pos`
-        new_w_names = new_ranked_lists[pos, :num_weights]
+        new_w_names = new_ranked_lists[pos, :n_w]
 
         # Get weight coordinates giving the ranked list position
         wx, wy = np.unravel_index(pos, (M, N))
@@ -120,7 +125,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, num_weights=None):
     return ima_fil
 
 
-def udlf_config(size_dataset, L):
+def udlf_config(size_dataset, L, udl_method, udl_params):
     # Set the paths for UDLF
     udlf.setBinaryPath(os.path.join(os.path.dirname(__file__),
                                     '../udlf/udlf'))
@@ -132,7 +137,7 @@ def udlf_config(size_dataset, L):
 
     # Input dataset files
     input_data.set_param('UDL_TASK', 'UDL')
-    input_data.set_param('UDL_METHOD', 'LHRR')
+    input_data.set_param('UDL_METHOD', f'{udl_method}')
     input_data.set_param('SIZE_DATASET', f'{size_dataset}')
     input_data.set_param('INPUT_FILE_FORMAT', 'RK')
     input_data.set_param('INPUT_RK_FORMAT', 'NUM')
@@ -149,16 +154,19 @@ def udlf_config(size_dataset, L):
     input_data.set_param('EFFECTIVENESS_EVAL', 'FALSE')
 
     # NONE method parameters
-    input_data.set_param('PARAM_NONE_L', f'{L}')
+    if(udl_method == 'NONE'):
+        input_data.set_param('PARAM_NONE_L', f'{L}')
 
     # LHRR method parameters
-    input_data.set_param('PARAM_LHRR_K', '18')
-    input_data.set_param('PARAM_LHRR_L', f'{L}')
-    input_data.set_param('PARAM_LHRR_T', '2')
+    elif(udl_method == 'LHRR'):
+        input_data.set_param('PARAM_LHRR_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_LHRR_L', f'{L}')
+        input_data.set_param('PARAM_LHRR_T', f'{udl_params["t"]}')
 
     # CPRR method parameters
-    input_data.set_param('PARAM_CPRR_K', '20')
-    input_data.set_param('PARAM_CPRR_L', f'{L}')
-    input_data.set_param('PARAM_CPRR_T', '2')
+    elif(udl_method == 'CPRR'):
+        input_data.set_param('PARAM_LHRR_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_LHRR_L', f'{L}')
+        input_data.set_param('PARAM_LHRR_T', f'{udl_params["t"]}')
 
     return input_data
