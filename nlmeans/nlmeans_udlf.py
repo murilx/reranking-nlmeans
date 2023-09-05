@@ -175,7 +175,7 @@ def udlf_config(size_dataset, L, udl_method, udl_params):
 
     elif(udl_method == 'RLSIM'):
         input_data.set_param('PARAM_RLSIM_TOPK', f'{udl_params["topk"]}')
-        input_data.set_param('PARAM_RLSIM_CK', f'{udl_params["ck"]}')
+        input_data.set_param('PARAM_RLSIM_CK', f'{L}')
         input_data.set_param('PARAM_RLSIM_T', f'{udl_params["t"]}')
         input_data.set_param('PARAM_RLSIM_METRIC', f'{udl_params["metric"]}')
 
@@ -225,15 +225,15 @@ def udlf_config(size_dataset, L, udl_method, udl_params):
         input_data.set_param('PARAM_RDPAC_PL', f'{udl_params["pl"]}')
 
     elif(udl_method == 'RFE'):
-        input_data.set_param('PARAM_RFE_K', f'{udl_params[""]}')
-        input_data.set_param('PARAM_RFE_T', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_RFE_T', f'{udl_params["t"]}')
         input_data.set_param('PARAM_RFE_L', f'{L}')
-        input_data.set_param('PARAM_RFE_PA', f'{udl_params[""]}')
-        input_data.set_param('PARAM_RFE_TH_CC', f'{udl_params[""]}')
-        input_data.set_param('PARAM_RFE_RERANK_BY_EMB', f'{udl_params[""]}')
-        input_data.set_param('PARAM_RFE_EXPORT_EMBEDDINGS', f'{udl_params[""]}')
-        input_data.set_param('PARAM_RFE_PERFORM_CSS', f'{udl_params[""]}')
-        input_data.set_param('PARAM_RFE_EMBEDDINGS_PATH', f'{udl_params[""]}')
-        input_data.set_param('PARAM_RFE_CCS_PATH', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_PA', f'{udl_params["pa"]}')
+        input_data.set_param('PARAM_RFE_TH_CC', f'{udl_params["th_cc"]}')
+        input_data.set_param('PARAM_RFE_RERANK_BY_EMB', f'{udl_params["rr_by_emb"]}')
+        input_data.set_param('PARAM_RFE_EXPORT_EMBEDDINGS', f'{udl_params["emb_exp"]}')
+        input_data.set_param('PARAM_RFE_PERFORM_CSS', f'{udl_params["css"]}')
+        input_data.set_param('PARAM_RFE_EMBEDDINGS_PATH', f'{udl_params["emb_path"]}')
+        input_data.set_param('PARAM_RFE_CCS_PATH', f'{udl_params["css_path"]}')
 
     return input_data

@@ -76,7 +76,6 @@ def rlsim():
     udl_method = 'RLSIM'
     udl_params = {
         'topk': 15,
-        'ck': 700,
         't': 3,
         'metric': 'INTERSECTION'
     }
@@ -125,7 +124,7 @@ def corgraph():
         'thold_s': 0.35,
         'thold_e': 1,
         'thold_i': 0.005,
-        'corr': 'PERSON'
+        'corr': 'PEARSON'
     }
 
 @ex.named_config
@@ -166,7 +165,7 @@ def rfe():
         'emb_exp': 'FALSE',
         'css': 'FALSE',
         'emb_path': 'embeddings.txt',
-        'css_path': 'css.path'
+        'css_path': 'css.txt'
     }
 
 @ex.automain
@@ -252,24 +251,24 @@ def main(_run, _log, image, hW, hP, tau, sig, shape, n_w, udl_method, udl_params
 
     # Show information on stdout
 
-    _log.info(f'Seed: {seed}')
+    _log.info(f'Seed: {seed}\n')
 
     _log.info('Noised Image:')
-    _log.info(f'PSNR:{im_noise_psnr}')
-    _log.info(f'SSIM:{im_noise_ssim}')
-    _log.info(f'MSE :{im_noise_mse}')
+    _log.info(f'PSNR: {im_noise_psnr}')
+    _log.info(f'SSIM: {im_noise_ssim}')
+    _log.info(f'MSE : {im_noise_mse}\n')
 
     _log.info('Non-Local Means:')
     _log.info(f'Time: {nlmeans_sap_time}')
-    _log.info(f'PSNR:{nlm_noise_psnr}')
-    _log.info(f'SSIM:{nlm_noise_ssim}')
-    _log.info(f'MSE :{nlm_noise_mse}')
+    _log.info(f'PSNR: {nlm_noise_psnr}')
+    _log.info(f'SSIM: {nlm_noise_ssim}')
+    _log.info(f'MSE : {nlm_noise_mse}\n')
 
     _log.info('UDLF Non-Local Means:')
     _log.info(f'Time: {nlmeans_udlf_time}')
-    _log.info(f'PSNR:{udlf_noise_psnr}')
-    _log.info(f'SSIM:{udlf_noise_ssim}')
-    _log.info(f'MSE :{udlf_noise_mse}')
+    _log.info(f'PSNR: {udlf_noise_psnr}')
+    _log.info(f'SSIM: {udlf_noise_ssim}')
+    _log.info(f'MSE : {udlf_noise_mse}\n')
 
     # Save info
     _run.info = {
