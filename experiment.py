@@ -49,6 +49,11 @@ def lhrr():
     }
 
 @ex.named_config
+def none():
+    """Configuration using NONE."""
+    udl_method = 'NONE'
+
+@ex.named_config
 def cprr():
     """Configuration using CPRR."""
     # UDLF Parameters
