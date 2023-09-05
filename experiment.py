@@ -58,6 +58,117 @@ def cprr():
         't': 2
     }
 
+@ex.named_config
+def rlrecom():
+    """Configuration using RLRECOM."""
+    # UDLF Parameters
+    udl_method = 'RLRECOM'
+    udl_params = {
+        'k': 8,
+        'lambda': 2,
+        'epsilon': 0.0125
+    }
+
+@ex.named_config
+def rlsim():
+    """Configuration using RLSIM."""
+    # UDLF Parameters
+    udl_method = 'RLSIM'
+    udl_params = {
+        'topk': 15,
+        'ck': 700,
+        't': 3,
+        'metric': 'INTERSECTION'
+    }
+
+@ex.named_config
+def contextrr():
+    """Configuration using CONTEXTRR."""
+    # UDLF Parameters
+    udl_method = 'CONTEXTRR'
+    udl_params = {
+        'l': 25,
+        'k': 7,
+        't': 5,
+        'nbyk': 1,
+        'opt': 'TRUE'
+    }
+
+@ex.named_config
+def recknngraph():
+    """Configuration using RECKNNGRAPH."""
+    # UDLF Parameters
+    udl_method = 'RECKNNGRAPH'
+    udl_params = {
+        'k': 15,
+        'epsilon': 0.0125
+    }
+
+@ex.named_config
+def rkgraph():
+    """Configuration using RKGRAPH."""
+    # UDLF Parameters
+    udl_method = 'RKGRAPH'
+    udl_params = {
+        'k': 20,
+        't': 1,
+        'p': 0.95
+    }
+
+@ex.named_config
+def corgraph():
+    """Configuration using CORGRAPH."""
+    # UDLF Parameters
+    udl_method = 'CORGRAPH'
+    udl_params = {
+        'k': 25,
+        'thold_s': 0.35,
+        'thold_e': 1,
+        'thold_i': 0.005,
+        'corr': 'PERSON'
+    }
+
+@ex.named_config
+def bfstree():
+    """Configuration using BFSTREE."""
+    # UDLF Parameters
+    udl_method = 'BFSTREE'
+    udl_params = {
+        'k': 20,
+        'corr': 'RBO'
+    }
+
+@ex.named_config
+def rdpac():
+    """Configuration using RDPAC."""
+    # UDLF Parameters
+    udl_method = 'RDPAC'
+    udl_params = {
+        'k_e': 15,
+        'k_i': 1,
+        'k_s': 1,
+        'l_mult': 2,
+        'p': 0.60,
+        'pl': 0.99
+    }
+
+@ex.named_config
+def rfe():
+    """Configuration using RFE."""
+    # UDLF Parameters
+    udl_method = 'RFE'
+    udl_params = {
+        'k': 20,
+        't': 2,
+        'pa': 0.1,
+        'th_cc': 0,
+        'rr_by_emb': 'FALSE',
+        'emb_exp': 'FALSE',
+        'css': 'FALSE',
+        'emb_path': 'embeddings.txt',
+        'css_path': 'css.path'
+    }
+
 @ex.automain
 def main(_run, _log, image, hW, hP, tau, sig, shape, n_w, udl_method, udl_params, seed):
     # List of images that can be selected to test the denoising method

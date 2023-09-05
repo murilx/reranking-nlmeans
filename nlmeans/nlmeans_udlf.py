@@ -158,20 +158,82 @@ def udlf_config(size_dataset, L, udl_method, udl_params):
     # Evaluation settings
     input_data.set_param('EFFECTIVENESS_EVAL', 'FALSE')
 
-    # NONE method parameters
+    # Method parameters
     if(udl_method == 'NONE'):
         input_data.set_param('PARAM_NONE_L', f'{L}')
 
-    # LHRR method parameters
+    elif(udl_method == 'CPRR'):
+        input_data.set_param('PARAM_CPRR_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_CPRR_L', f'{L}')
+        input_data.set_param('PARAM_CPRR_T', f'{udl_params["t"]}')
+
+    elif(udl_method == 'RLRECOM'):
+        input_data.set_param('PARAM_RLRECOM_L', f'{L}')
+        input_data.set_param('PARAM_RLRECOM_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_RLRECOM_LAMBDA', f'{udl_params["lambda"]}')
+        input_data.set_param('PARAM_RLRECOM_EPSILON', f'{udl_params["epsilon"]}')
+
+    elif(udl_method == 'RLSIM'):
+        input_data.set_param('PARAM_RLSIM_TOPK', f'{udl_params["topk"]}')
+        input_data.set_param('PARAM_RLSIM_CK', f'{udl_params["ck"]}')
+        input_data.set_param('PARAM_RLSIM_T', f'{udl_params["t"]}')
+        input_data.set_param('PARAM_RLSIM_METRIC', f'{udl_params["metric"]}')
+
+    elif(udl_method == 'CONTEXTRR'):
+        input_data.set_param('PARAM_CONTEXTRR_L', f'{udl_params["l"]}')
+        input_data.set_param('PARAM_CONTEXTRR_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_CONTEXTRR_T', f'{udl_params["t"]}')
+        input_data.set_param('PARAM_CONTEXTRR_NBYK', f'{udl_params["nbyk"]}')
+        input_data.set_param('PARAM_CONTEXTRR_OPTIMIZATIONS', f'{udl_params["opt"]}')
+
+    elif(udl_method == 'RECKNNGRAPH'):
+        input_data.set_param('PARAM_RECKNNGRAPH_L', f'{L}')
+        input_data.set_param('PARAM_RECKNNGRAPH_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_RECKNNGRAPH_EPSILON', f'{udl_params["epsilon"]}')
+
+    elif(udl_method == 'RKGRAPH'):
+        input_data.set_param('PARAM_RKGRAPH_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_RKGRAPH_T', f'{udl_params["t"]}')
+        input_data.set_param('PARAM_RKGRAPH_P', f'{udl_params["p"]}')
+        input_data.set_param('PARAM_RKGRAPH_L', f'{L}')
+
+    elif(udl_method == 'CORGRAPH'):
+        input_data.set_param('PARAM_CORGRAPH_L', f'{L}')
+        input_data.set_param('PARAM_CORGRAPH_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_CORGRAPH_THRESHOLD_START', f'{udl_params["thold_s"]}')
+        input_data.set_param('PARAM_CORGRAPH_THRESHOLD_END', f'{udl_params["thold_e"]}')
+        input_data.set_param('PARAM_CORGRAPH_THRESHOLD_INC', f'{udl_params["thold_i"]}')
+        input_data.set_param('PARAM_CORGRAPH_CORRELATION', f'{udl_params["corr"]}')
+
     elif(udl_method == 'LHRR'):
         input_data.set_param('PARAM_LHRR_K', f'{udl_params["k"]}')
         input_data.set_param('PARAM_LHRR_L', f'{L}')
         input_data.set_param('PARAM_LHRR_T', f'{udl_params["t"]}')
 
-    # CPRR method parameters
-    elif(udl_method == 'CPRR'):
-        input_data.set_param('PARAM_CPRR_K', f'{udl_params["k"]}')
-        input_data.set_param('PARAM_CPRR_L', f'{L}')
-        input_data.set_param('PARAM_CPRR_T', f'{udl_params["t"]}')
+    elif(udl_method == 'BFSTREE'):
+        input_data.set_param('PARAM_BFSTREE_L', f'{L}')
+        input_data.set_param('PARAM_BFSTREE_K', f'{udl_params["k"]}')
+        input_data.set_param('PARAM_BFSTREE_CORRELATION_METRIC', f'{udl_params["corr"]}')
+
+    elif(udl_method == 'RDPAC'):
+        input_data.set_param('PARAM_RDPAC_K_END', f'{udl_params["k_e"]}')
+        input_data.set_param('PARAM_RDPAC_K_INC', f'{udl_params["k_i"]}')
+        input_data.set_param('PARAM_RDPAC_K_START', f'{udl_params["k_s"]}')
+        input_data.set_param('PARAM_RDPAC_L', f'{L}')
+        input_data.set_param('PARAM_RDPAC_L_MULT', f'{udl_params["l_mult"]}')
+        input_data.set_param('PARAM_RDPAC_P', f'{udl_params["p"]}')
+        input_data.set_param('PARAM_RDPAC_PL', f'{udl_params["pl"]}')
+
+    elif(udl_method == 'RFE'):
+        input_data.set_param('PARAM_RFE_K', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_T', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_L', f'{L}')
+        input_data.set_param('PARAM_RFE_PA', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_TH_CC', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_RERANK_BY_EMB', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_EXPORT_EMBEDDINGS', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_PERFORM_CSS', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_EMBEDDINGS_PATH', f'{udl_params[""]}')
+        input_data.set_param('PARAM_RFE_CCS_PATH', f'{udl_params[""]}')
 
     return input_data
