@@ -201,6 +201,11 @@ def main(_run, _log, image, hW, hP, tau, sig, shape, n_w, udl_method, udl_params
     if len(im.shape) == 3:
         im = rgb2gray(im)
 
+        # If the image is one from skimage.data, saves it
+        if image == im_name:
+            plt.imsave(os.path.join(os.path.dirname(__file__),
+                                    'input/skimage', f'{im_name}.png'), im, cmap='gray')
+
     im_nse = random_noise(im, var = sig**2)
 
     # estimate the noise standard deviation from the noisy image
