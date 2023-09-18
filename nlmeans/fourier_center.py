@@ -10,13 +10,13 @@ def fourier_center(M, N):
     # WARNING: +1 shift due to Matlab's convention for FFT
     
     if M % 2 == 1:
-        cM = (M + 3) // 2
-    else:
         cM = (M + 2) // 2
+    else:
+        cM = (M + 1) // 2
     
     if N % 2 == 1:
-        cN = (N + 3) // 2
-    else:
         cN = (N + 2) // 2
+    else:
+        cN = (N + 1) // 2
     
     return cM, cN
