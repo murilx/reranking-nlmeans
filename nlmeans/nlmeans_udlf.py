@@ -95,13 +95,16 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, udl_method, udl_params, n_w):
         udl_params = udl_params
     )
 
-    # Run the UDLF framework to get a ranked list of weights
-    udlf.run(input_data, get_output=True)
-    new_ranked_lists = np.loadtxt('output.txt',
-                                  dtype=int,
-                                  delimiter=' ',
-                                  usecols=range(ranked_lists.shape[1]))
-
+    if not udl_method == 'NONE':
+        # Run the UDLF framework to get a ranked list of weights
+        udlf.run(input_data, get_output=True)
+        new_ranked_lists = np.loadtxt('output.txt',
+                                      dtype=int,
+                                      delimiter=' ',
+                                      usecols=range(ranked_lists.shape[1]))
+    else:
+        new_ranked_lists = ranked_lists
+        
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
     if n_w is None or num_weights > NEIGHBOURHOOD_SIZE:
