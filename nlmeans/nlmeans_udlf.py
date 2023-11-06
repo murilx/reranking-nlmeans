@@ -107,7 +107,7 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, udl_method, udl_params, n_w):
         
     sum_w = np.zeros((M, N))
     sum_wI = np.zeros((M, N))
-    if n_w is None or num_weights > NEIGHBOURHOOD_SIZE:
+    if n_w is None or n_w > NEIGHBOURHOOD_SIZE:
         n_w = new_ranked_lists.shape[1]
     for col in range(n_w):
         # Get the `num_weights` first elements of the ranked list array at `pos`
