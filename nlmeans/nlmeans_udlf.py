@@ -123,7 +123,10 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, udl_method, udl_params, n_w):
 
         # Convert the distance to weights using an exponential
         # kernel (this is a critical step!)
-        w = np.exp(- diff / tau**2)
+        if (diff == 0).all():
+           w = np.zeros((M, N)) + np.exp(-2*sig**2/tau**2)
+        else:
+            w = np.exp(- diff / tau**2)
 
         # Calculate the desnoised value of each pixel
         sum_wI += ima_nse[x_idx, y_idx] * w
