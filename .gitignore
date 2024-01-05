@@ -1,5 +1,6 @@
 # Python related files
 __pycache__/
+.ipynb_checkpoints/
 
 # Images - Input and Output
 input/
