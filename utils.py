@@ -29,16 +29,16 @@ images = (
 # Dictionary containing the "optimal" cut shape for each image
 cut_shapes = {
     'astronaut': (100, 300),
-    'brick': None,
-    'camera': None,
-    'cat': None,
+    'brick': (100, 300),
+    'camera': (80, 280),
+    'cat': (100, 300) ,
     'checkerboard': None,
-    'clock': None,
-    'coffe': None,
-    'coins': None,
+    'clock': (60, 260, 110, 310),
+    'coffee': (150, 350),
+    'coins': (100, 300),
     'grass': None,
     'gravel': None,
-    'horse': None
+    'horse': (50, 250)
 }
 
 
@@ -71,15 +71,25 @@ def process_image(im, sig, seed = None, cut_shape = None):
                 im = im[:, 0:im.shape[0]]
             else:
                 im = im[:, 0:200]
-    else:
+    elif len(cut_shape) == 2:
         im = im[cut_shape[0]:cut_shape[1], cut_shape[0]:cut_shape[1]]
+    elif len(cut_shape) == 4:
+        im = im[cut_shape[0]:cut_shape[1], cut_shape[2]:cut_shape[3]]
+    else:
+        print('[err] Invalid cut_shape parameter:', cut_shape, file=sys.stderr)
+        return None, None, None
         
     # Incorrect shape verification
     if im.shape[0] != im.shape[1]:
         print('[err] Invalid Shape on image', im.shape, file=sys.stderr)
+        return None, None, None # In case of an error, all returned values are None
 
-    if len(im.shape) == 3:
-        im = rgb2gray(im)
+    try:
+        if len(im.shape) == 3:
+            im = rgb2gray(im)
+    except ValueError:
+        print('[err]rgb2gray on image:', image, im.shape, file=sys.stderr)
+        return None, None, None # In case of an error, all returned values are None
 
     im_nse = random_noise(im, var = sig**2, rng = seed)
 
