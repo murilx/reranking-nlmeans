@@ -75,10 +75,13 @@ def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, udl_method, udl_params, n_w):
     ranked_lists = np.zeros((M * N, NEIGHBOURHOOD_SIZE), dtype=int)
     for i in range(M):
         for j in range(N):
-            rl = np.rec.fromarrays((w_names[i, j, :], w_values[i, j, :]),
-                                   names=('names', 'values'))
-            rl = rl[rl['values'].argsort()]
-            ranked_lists[i * M + j, :] = np.copy(rl['names'])
+            # rl = np.rec.fromarrays((w_names[i, j, :], w_values[i, j, :]),
+            #                        names=('names', 'values'))
+            # rl = rl[rl['values'].argsort()]
+            # ranked_lists[i * M + j, :] = np.copy(rl['names'])
+            rl_names = w_names[i, j, :]
+            rl_values = w_values[i, j, :]
+            ranked_lists[i * M + j, :] = rl_names[rl_values.argsort()]
 
     # Create the input file for the UDLF
     np.savetxt('input.txt', ranked_lists, fmt='%d', delimiter=' ', newline='\n')
@@ -222,9 +225,9 @@ def udlf_config(size_dataset, L, udl_method, udl_params):
         input_data.set_param('PARAM_BFSTREE_CORRELATION_METRIC', f'{udl_params["corr"]}')
 
     elif(udl_method == 'RDPAC'):
-        input_data.set_param('PARAM_RDPAC_K_END', f'{udl_params["k_e"]}')
-        input_data.set_param('PARAM_RDPAC_K_INC', f'{udl_params["k_i"]}')
-        input_data.set_param('PARAM_RDPAC_K_START', f'{udl_params["k_s"]}')
+        input_data.set_param('PARAM_RDPAC_K_END', f'{udl_params["k_end"]}')
+        input_data.set_param('PARAM_RDPAC_K_INC', f'{udl_params["k_inc"]}')
+        input_data.set_param('PARAM_RDPAC_K_START', f'{udl_params["k_start"]}')
         input_data.set_param('PARAM_RDPAC_L', f'{L}')
         input_data.set_param('PARAM_RDPAC_L_MULT', f'{udl_params["l_mult"]}')
         input_data.set_param('PARAM_RDPAC_P', f'{udl_params["p"]}')
