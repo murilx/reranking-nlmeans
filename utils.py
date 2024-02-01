@@ -48,6 +48,9 @@ def get_image(image):
     if image in images:
         im = getattr(data, image)()
         im_name = image
+        if not np.issubdtype(im.dtype, np.floating):
+            im = im.astype(float)
+            im = (im - np.min(im)) / (np.max(im) - np.min(im))
     else:
         im = plt.imread(image).astype('float')
         im_name = os.path.splitext(os.path.basename(image))[0]
