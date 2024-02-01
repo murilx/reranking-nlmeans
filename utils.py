@@ -120,3 +120,11 @@ def rm_tmp_files():
             os.remove(tmp_file)
         except FileNotFoundError:
             pass
+
+
+def highlight_best_values(s):
+    """Highlight the best values of a Data Frame.
+    """
+    is_max = s == s.max()
+    styles = ['font-weight: bold' if v else '' for v in is_max]
+    return styles
