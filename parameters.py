@@ -18,4 +18,5 @@ def get_udl_params(udl_method):
     return {
         'CPRR':    {'k':3, 't': 1},
         'RLRECOM': {'k':3, 'lambda': 9, 'epsilon': 0.0125},
+        'RDPAC':   {'k_end':15, 'k_inc':1, 'k_start':1, 'l_mult':1, 'p':0.75, 'pl':0.97}
     }.get(udl_method, None)
