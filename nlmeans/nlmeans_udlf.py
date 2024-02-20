@@ -4,6 +4,7 @@ from pyUDLF import run_calls as udlf
 from pyUDLF.utils import inputType
 
 import os
+import matplotlib.pyplot as plt
 
 def nlmeans_udlf(ima_nse, hW, hP, tau, sig, shape, udl_method, udl_params, n_w):
     # This is a simple implementation of NL means:
@@ -189,7 +190,7 @@ def udlf_config(size_dataset, L, udl_method, udl_params):
         input_data.set_param('PARAM_RLSIM_METRIC', f'{udl_params["metric"]}')
 
     elif(udl_method == 'CONTEXTRR'):
-        input_data.set_param('PARAM_CONTEXTRR_L', f'{udl_params["l"]}')
+        input_data.set_param('PARAM_CONTEXTRR_L', f'{L}')
         input_data.set_param('PARAM_CONTEXTRR_K', f'{udl_params["k"]}')
         input_data.set_param('PARAM_CONTEXTRR_T', f'{udl_params["t"]}')
         input_data.set_param('PARAM_CONTEXTRR_NBYK', f'{udl_params["nbyk"]}')
@@ -209,9 +210,9 @@ def udlf_config(size_dataset, L, udl_method, udl_params):
     elif(udl_method == 'CORGRAPH'):
         input_data.set_param('PARAM_CORGRAPH_L', f'{L}')
         input_data.set_param('PARAM_CORGRAPH_K', f'{udl_params["k"]}')
-        input_data.set_param('PARAM_CORGRAPH_THRESHOLD_START', f'{udl_params["thold_s"]}')
-        input_data.set_param('PARAM_CORGRAPH_THRESHOLD_END', f'{udl_params["thold_e"]}')
-        input_data.set_param('PARAM_CORGRAPH_THRESHOLD_INC', f'{udl_params["thold_i"]}')
+        input_data.set_param('PARAM_CORGRAPH_THRESHOLD_START', f'{udl_params["thold_start"]}')
+        input_data.set_param('PARAM_CORGRAPH_THRESHOLD_END', f'{udl_params["thold_end"]}')
+        input_data.set_param('PARAM_CORGRAPH_THRESHOLD_INC', f'{udl_params["thold_inc"]}')
         input_data.set_param('PARAM_CORGRAPH_CORRELATION', f'{udl_params["corr"]}')
 
     elif(udl_method == 'LHRR'):
