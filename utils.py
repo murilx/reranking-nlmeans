@@ -1,4 +1,5 @@
 import os
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -11,24 +12,28 @@ from skimage.restoration import estimate_sigma
 from skimage.util import random_noise
 
 
-# List of images that can be selected to test the denoising method
-images = (
-    'astronaut',
-    'brick',
-    'camera',
-    'cat',
-    'checkerboard',
-    'clock',
-    'coffee',
-    'coins',
-    'grass',
-    'gravel',
-    'horse'
-)
+images = ('astronaut',
+          'binary_blobs',
+          'brick',
+          'camera',
+          'cat',
+          'checkerboard',
+          'clock',
+          'coffee',
+          'coins',
+          'eagle',
+          'grass',
+          'gravel',
+          'horse',
+          'page',
+          'text',
+          'rocket',
+          )
 
 # Dictionary containing the "optimal" cut shape for each image
 cut_shapes = {
     'astronaut': (100, 300),
+    'binary_blobs': None,
     'brick': (100, 300),
     'camera': (80, 280),
     'cat': (100, 300) ,
@@ -36,9 +41,13 @@ cut_shapes = {
     'clock': (60, 260, 110, 310),
     'coffee': (150, 350),
     'coins': (100, 300),
+    'eagle': (450, 650, 750, 950), 
     'grass': None,
     'gravel': None,
-    'horse': (50, 250)
+    'horse': (0, 200, 200, 400),
+    'page': None,
+    'text': None,
+    'rocket': (100, 300, 225, 425),
 }
 
 
@@ -91,7 +100,7 @@ def process_image(im, sig, seed = None, cut_shape = None):
         if len(im.shape) == 3:
             im = rgb2gray(im)
     except ValueError:
-        print('[err]rgb2gray on image:', image, im.shape, file=sys.stderr)
+        print('[err]rgb2gray on image:', im.shape, file=sys.stderr)
         return None, None, None # In case of an error, all returned values are None
 
     im_nse = random_noise(im, var = sig**2, rng = seed)
