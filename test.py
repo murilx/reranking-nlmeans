@@ -31,12 +31,12 @@ im_fil1 = nlmeans(im_nse, hW, hP, tau, sigma_est, shape)
 nlmeans_sap_time = time() - start_time
 
 # Run filtering UDLF nlmeans
- udl_method = 'CPRR'
- udl_params = get_udl_params(udl_method)
- start_time = time()
- im_fil2 = nlmeans_udlf(im_nse, hW, hP, tau, sigma_est, shape, udl_method, udl_params, n_w)
- nlmeans_udlf_time = time() - start_time
- rm_tmp_files() # Remove files created by UDLF
+udl_method = 'CPRR'
+udl_params = get_udl_params(udl_method)
+start_time = time()
+im_fil2 = nlmeans_udlf(im_nse, hW, hP, tau, sigma_est, shape, udl_method, udl_params, n_w)
+nlmeans_udlf_time = time() - start_time
+rm_tmp_files() # Remove files created by UDLF
 
 # Run filtering NONE nlmeans
 udl_method = 'NONE'
